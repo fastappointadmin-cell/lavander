@@ -1,0 +1,46 @@
+<div class="border border-gray-200 rounded-lg bg-white shadow-sm p-4">
+  <button
+    type="button"
+    (click)="toggleCollapsed()"
+    class="flex items-center justify-between w-full text-left font-semibold text-sm text-gray-900"
+  >
+    <span>{{ title() }}</span>
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="transition-transform"
+      [class.rotate-180]="collapsed()"
+    >
+      <polyline points="18 15 12 9 6 15"/>
+    </svg>
+  </button>
+
+  @if (!collapsed()) {
+    <ul class="mt-3 space-y-2.5">
+      @for (option of visibleOptions(); track option.label) {
+        <li>
+          <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+            <input type="checkbox" class="rounded border-gray-300 text-violet-600 focus:ring-violet-500" />
+            <span>{{ option.label }} <span class="text-gray-400">({{ option.count }})</span></span>
+          </label>
+        </li>
+      }
+    </ul>
+
+    @if (!showAll() && hiddenCount() > 0) {
+      <button
+        type="button"
+        (click)="showMore()"
+        class="mt-3 text-sm font-medium text-violet-600 hover:underline"
+      >
+        + mai mult ({{ hiddenCount() }})
+      </button>
+    }
+  }
+</div>

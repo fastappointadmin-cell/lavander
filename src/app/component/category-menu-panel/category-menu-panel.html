@@ -1,0 +1,43 @@
+<div class="flex bg-white shadow-sm border border-gray-100 overflow-hidden">
+  <ul class="w-64 border-r border-gray-100">
+    @for (group of groups(); track group.id) {
+      <li
+        (mouseenter)="onGroupHover(group.id)"
+        class="flex items-center justify-between px-4 py-2.5 text-sm cursor-pointer transition-colors"
+        [class.bg-violet-50]="activeGroup()?.id === group.id"
+        [class.text-violet-600]="activeGroup()?.id === group.id"
+        [class.text-gray-900]="activeGroup()?.id !== group.id"
+      >
+        <span>{{ group.groupName }}</span>
+        <span class="text-gray-400">&rsaquo;</span>
+      </li>
+    }
+  </ul>
+  @if (activeGroup(); as active) {
+    <div class="flex gap-8 p-6 min-w-[32rem]">
+      @for (subGroup of active.listOfSubGroups; track subGroup.id) {
+        <div class="w-48">
+          <p class="font-semibold text-sm text-gray-900 mb-2">{{ subGroup.groupName }}</p>
+          <ul class="space-y-1.5">
+            @for (childGroup of subGroup.listOfSubGroups; track childGroup.id) {
+              <li class="text-sm text-gray-600 hover:text-violet-600 cursor-pointer">{{ childGroup.groupName }}</li>
+            }
+            @for (category of subGroup.listOfCategories; track category.id) {
+              <li class="text-sm text-gray-600 hover:text-violet-600 cursor-pointer" (click)="onCategoryClick(category)">{{ category.categoryName }}</li>
+            }
+          </ul>
+        </div>
+      }
+
+      @if (active.listOfCategories.length > 0) {
+        <div class="w-48">
+          <ul class="space-y-1.5">
+            @for (category of active.listOfCategories; track category.id) {
+              <li class="text-sm text-gray-600 hover:text-violet-600 cursor-pointer" (click)="onCategoryClick(category)">{{ category.categoryName }}</li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  }
+</div>
