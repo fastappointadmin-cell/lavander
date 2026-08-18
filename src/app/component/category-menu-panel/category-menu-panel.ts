@@ -17,6 +17,9 @@ export class CategoryMenuPanel {
   private readonly router = inject(Router);
 
   private readonly hoveredGroupId = signal<number | null>(null);
+  // True while hovering the promotions list, so the last-hovered category group's
+  // highlight doesn't linger alongside the promo entry's own hover highlight.
+  private readonly hoveringPromotions = signal(false);
 
   protected readonly activeGroup = computed(() => {
     const groups = this.groups();
@@ -25,7 +28,16 @@ export class CategoryMenuPanel {
   });
 
   protected onGroupHover(groupId: number): void {
+    this.hoveringPromotions.set(false);
     this.hoveredGroupId.set(groupId);
+  }
+
+  protected onPromotionsHover(): void {
+    this.hoveringPromotions.set(true);
+  }
+
+  protected isGroupHighlighted(groupId: number): boolean {
+    return !this.hoveringPromotions() && this.activeGroup()?.id === groupId;
   }
 
   protected onCategoryClick(

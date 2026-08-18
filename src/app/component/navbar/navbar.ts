@@ -24,10 +24,14 @@ export class Navbar {
   });
 
   private readonly hovered = signal(false);
-  private readonly categorySelected = computed(() => this.context.selectedCategorySignal() !== null);
+  // A category or a promotion counts as "something selected" — either one should let
+  // the menu default to closed, not just category selection.
+  private readonly menuTargetSelected = computed(
+    () => this.context.selectedCategorySignal() !== null || this.context.selectedPromotionGroup() !== null,
+  );
   private closeTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
-  protected readonly categoriesMenuOpen = computed(() => !this.categorySelected() || this.hovered());
+  protected readonly categoriesMenuOpen = computed(() => !this.menuTargetSelected() || this.hovered());
 
   protected onMenuEnter(): void {
     clearTimeout(this.closeTimeoutId);

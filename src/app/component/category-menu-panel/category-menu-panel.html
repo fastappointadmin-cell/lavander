@@ -4,9 +4,9 @@
       <li
         (mouseenter)="onGroupHover(group.id)"
         class="flex items-center justify-between px-4 py-2.5 text-sm cursor-pointer transition-colors"
-        [class.bg-violet-50]="activeGroup()?.id === group.id"
-        [class.text-violet-600]="activeGroup()?.id === group.id"
-        [class.text-gray-900]="activeGroup()?.id !== group.id"
+        [class.bg-violet-50]="isGroupHighlighted(group.id)"
+        [class.text-violet-600]="isGroupHighlighted(group.id)"
+        [class.text-gray-900]="!isGroupHighlighted(group.id)"
       >
         <span>{{ group.groupName }}</span>
         <span class="text-gray-400">&rsaquo;</span>
@@ -14,6 +14,7 @@
     }
     @for (promo of promotionGroups(); track promo.id) {
       <li
+        (mouseenter)="onPromotionsHover()"
         (click)="onPromotionClick(promo)"
         class="px-4 py-2.5 text-sm cursor-pointer transition-colors text-gray-900 hover:bg-violet-50 hover:text-violet-600"
       >
