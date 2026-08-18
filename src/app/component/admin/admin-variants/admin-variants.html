@@ -17,7 +17,7 @@
       </label>
       <label class="flex flex-col gap-1 text-sm text-gray-700">
         Product
-        <select [(ngModel)]="productId" name="productId" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+        <select [ngModel]="productId" (ngModelChange)="onProductChange($event)" name="productId" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
           <option [ngValue]="null">Select a product</option>
           @for (product of products(); track product.id) {
             <option [ngValue]="product.id">{{ product.productName }}</option>
@@ -36,6 +36,7 @@
 
     <div>
       <p class="text-sm text-gray-700 mb-1">Variant properties</p>
+      <p class="text-xs text-gray-500 mb-2">Pre-filled from the selected product's category and extra properties &mdash; just fill in the values, or add more.</p>
       @for (row of propertyRows; track $index) {
         <div class="flex items-center gap-2 mb-2">
           <select [(ngModel)]="row.propertyDefinitionId" [name]="'propertyDefinitionId' + $index" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
@@ -80,6 +81,7 @@
           <td class="py-2">{{ item.price }} Lei</td>
           <td class="py-2 text-right">
             <button type="button" (click)="startEdit(item)" class="text-violet-600 hover:underline mr-3">Edit</button>
+            <button type="button" (click)="copyFrom(item)" class="text-violet-600 hover:underline mr-3">Copy</button>
             <button type="button" (click)="remove(item)" class="text-red-600 hover:underline">Delete</button>
           </td>
         </tr>

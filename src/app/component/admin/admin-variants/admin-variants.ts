@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { ProductCatalog } from '../../../service/product-catalog';
 import { Product, ProductVariant, PropertyDefinition } from '../../../models/models';
 import { PropertyValueInput } from '../../../models/admin-requests';
+import { flattenCategories } from '../../../utils/admin-category-tree.util';
 
 interface VariantPropertyRow {
   propertyDefinitionId: number | null;
@@ -31,14 +32,58 @@ export class AdminVariants implements OnInit {
   protected starRating: number | null = null;
   protected propertyRows: VariantPropertyRow[] = [];
 
+  private categoryPropertiesByCategoryId = new Map<number, PropertyDefinition[]>();
+
   ngOnInit(): void {
     this.load();
     this.productCatalog.getAllProducts().subscribe((products) => this.products.set(products));
     this.productCatalog.getPropertyDefinitions().subscribe((properties) => this.properties.set(properties));
+    this.productCatalog.getCategoryGroups().subscribe((groups) => {
+      this.categoryPropertiesByCategoryId = new Map(
+        flattenCategories(groups).map((flattened) => [flattened.category.id, flattened.category.categoryProperties]),
+      );
+    });
   }
 
   private load(): void {
     this.productCatalog.getAllVariants().subscribe((items) => this.items.set(items));
+  }
+
+  /**
+   * Rows for every property the product's category defines plus the
+   * product's own extra properties, keeping values already entered for
+   * matching properties and preserving any ad-hoc rows the admin added
+   * that aren't part of that set.
+   */
+  private buildPropertyRowsForProduct(productId: number | null, existingRows: VariantPropertyRow[]): VariantPropertyRow[] {
+    if (productId === null) {
+      return existingRows;
+    }
+    const product = this.products().find((p) => p.id === productId);
+    if (!product) {
+      return existingRows;
+    }
+
+    const applicable = new Map<number, PropertyDefinition>();
+    for (const property of this.categoryPropertiesByCategoryId.get(product.category.id) ?? []) {
+      applicable.set(property.id, property);
+    }
+    for (const property of product.extraProperties) {
+      applicable.set(property.id, property);
+    }
+
+    const existingValueByPropertyId = new Map(existingRows.map((row) => [row.propertyDefinitionId, row.value]));
+    const rows: VariantPropertyRow[] = Array.from(applicable.values()).map((property) => ({
+      propertyDefinitionId: property.id,
+      value: existingValueByPropertyId.get(property.id) ?? '',
+    }));
+
+    for (const row of existingRows) {
+      if (row.propertyDefinitionId !== null && !applicable.has(row.propertyDefinitionId)) {
+        rows.push(row);
+      }
+    }
+    return rows;
   }
 
   protected addPropertyRow(): void {
@@ -49,6 +94,11 @@ export class AdminVariants implements OnInit {
     this.propertyRows = this.propertyRows.filter((_, i) => i !== index);
   }
 
+  protected onProductChange(value: number | null): void {
+    this.productId = value;
+    this.propertyRows = this.buildPropertyRowsForProduct(value, this.propertyRows);
+  }
+
   protected startEdit(item: ProductVariant): void {
     this.editingId.set(item.id);
     this.variantName = item.variantName;
@@ -56,10 +106,27 @@ export class AdminVariants implements OnInit {
     this.productId = item.product.id;
     this.price = item.price;
     this.starRating = item.starRating;
-    this.propertyRows = item.variantProperties.map((pv) => ({
+    const rows = item.variantProperties.map((pv) => ({
       propertyDefinitionId: pv.propertyDefinition.id,
       value: pv.propertyValue,
     }));
+    this.propertyRows = this.buildPropertyRowsForProduct(item.product.id, rows);
+    this.errorMessage.set(null);
+  }
+
+  /** Pre-fills the create form from an existing variant, ready to tweak and save as a new one. */
+  protected copyFrom(item: ProductVariant): void {
+    this.editingId.set(null);
+    this.variantName = item.variantName;
+    this.variantDescription = item.variantDescription;
+    this.productId = item.product.id;
+    this.price = item.price;
+    this.starRating = item.starRating;
+    const rows = item.variantProperties.map((pv) => ({
+      propertyDefinitionId: pv.propertyDefinition.id,
+      value: pv.propertyValue,
+    }));
+    this.propertyRows = this.buildPropertyRowsForProduct(item.product.id, rows);
     this.errorMessage.set(null);
   }
 
