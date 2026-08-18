@@ -65,3 +65,27 @@ export function findCategoryPathBySlugs(
 
   return null;
 }
+
+/**
+ * Resolves a category's group/subGroup from its id alone, for callers that only
+ * have a category id (e.g. a variant reached via a promotion listing, which pools
+ * variants from categories other than the one currently being browsed).
+ */
+export function findCategoryPathByCategoryId(
+  groups: ProductCategoryGroup[],
+  categoryId: number,
+): CategoryPath | null {
+  for (const group of groups) {
+    const direct = group.categories.find((candidate) => candidate.id === categoryId);
+    if (direct) {
+      return { group, category: direct };
+    }
+    for (const subGroup of group.subGroups) {
+      const nested = subGroup.categories.find((candidate) => candidate.id === categoryId);
+      if (nested) {
+        return { group, subGroup, category: nested };
+      }
+    }
+  }
+  return null;
+}

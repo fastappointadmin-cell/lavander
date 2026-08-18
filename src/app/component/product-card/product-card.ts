@@ -2,7 +2,7 @@ import { Component, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProductVariant } from '../../models/models';
 import { Context } from '../../service/context';
-import { getCategoryPathSlugs } from '../../utils/category-path.util';
+import { findCategoryPathByCategoryId, getCategoryPathSlugs } from '../../utils/category-path.util';
 
 @Component({
   selector: 'app-product-card',
@@ -20,10 +20,17 @@ export class ProductCard {
 
   protected onCardClick(): void {
     const path = this.context.selectedCategoryPath();
-    if (!path) {
+    const slugs = path
+      ? getCategoryPathSlugs(path.group, path.category, path.subGroup)
+      : this.resolveSlugsFromVariantCategory();
+    if (!slugs) {
       return;
     }
-    const slugs = getCategoryPathSlugs(path.group, path.category, path.subGroup);
     this.router.navigate(['/products', ...slugs, 'product', this.variant().product.id, 'variant', this.variant().id]);
+  }
+
+  private resolveSlugsFromVariantCategory(): string[] | null {
+    const path = findCategoryPathByCategoryId(this.context.categoryGroups(), this.variant().product.categoryId);
+    return path ? getCategoryPathSlugs(path.group, path.category, path.subGroup) : null;
   }
 }

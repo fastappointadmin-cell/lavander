@@ -2,9 +2,9 @@ import { Injectable, Signal, computed, inject } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, forkJoin, map, of, startWith, switchMap } from 'rxjs';
-import { Product, ProductCategory, ProductVariant } from '../models/models';
+import { Product, ProductCategory, ProductVariant, PromotionGroup } from '../models/models';
 import { ProductCatalog } from './product-catalog';
-import { CategoryPath, findCategoryPathBySlugs } from '../utils/category-path.util';
+import { CategoryPath, findCategoryPathBySlugs, slugify } from '../utils/category-path.util';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,9 @@ export class Context {
     private readonly router = inject(Router);
     private readonly productCatalog = inject(ProductCatalog);
 
-    private readonly categoryGroups = toSignal(this.productCatalog.getCategoryGroups(), { initialValue: [] });
+    readonly categoryGroups = toSignal(this.productCatalog.getCategoryGroups(), { initialValue: [] });
+
+    private readonly promotionGroups = toSignal(this.productCatalog.getPromotionGroups(), { initialValue: [] });
 
     // Reads the current URL's segments fresh on every completed navigation, rather than
     // named route params, since products/** is a single route (any depth), so there are no
@@ -26,6 +28,15 @@ export class Context {
             startWith(this.currentPathSegments()),
         ),
         { initialValue: this.currentPathSegments() },
+    );
+
+    private readonly currentUrl: Signal<string> = toSignal(
+        this.router.events.pipe(
+            filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+            map(() => this.router.url),
+            startWith(this.router.url),
+        ),
+        { initialValue: this.router.url },
     );
 
     private readonly categorySlugs: Signal<string[]> = computed(() => {
@@ -103,6 +114,32 @@ export class Context {
         const variantId = this.selectedVariantId();
         return variants.find((variant) => variant.id === variantId) ?? variants[0];
     });
+
+    readonly selectedPromotionSlug: Signal<string | null> = computed(() => {
+        const path = this.currentUrl().split('?')[0].split('#')[0];
+        const segments = path.split('/').filter((segment) => segment.length > 0);
+        return segments[0] === 'promotions' ? (segments[1] ?? null) : null;
+    });
+
+    readonly selectedPromotionGroup: Signal<PromotionGroup | null> = computed(() => {
+        const slug = this.selectedPromotionSlug();
+        if (!slug) {
+            return null;
+        }
+        return this.promotionGroups().find((group) => slugify(group.groupName) === slug) ?? null;
+    });
+
+    readonly selectedPromotionVariants: Signal<ProductVariant[]> = toSignal(
+        toObservable(this.selectedPromotionGroup).pipe(
+            switchMap((group) => {
+                if (!group) {
+                    return of([]);
+                }
+                return this.productCatalog.getPromotionGroupVariants(group.id);
+            }),
+        ),
+        { initialValue: [] },
+    );
 
     private currentPathSegments(): string[] {
         const path = this.router.url.split('?')[0].split('#')[0];
