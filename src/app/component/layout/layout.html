@@ -4,6 +4,8 @@
   <div class="flex items-start gap-4">
     @if (isProductSelected()) {
       <app-product-detail class="flex-1 min-w-0"></app-product-detail>
+    } @else if (isPromotionSelected()) {
+      <app-promotion-page class="flex-1 min-w-0"></app-promotion-page>
     } @else {
       @if (isCategorySelected()) {
         <app-sidebar></app-sidebar>

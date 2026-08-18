@@ -1,0 +1,14 @@
+<div class="min-w-0 border border-gray-200 rounded-xl bg-white p-6">
+  <h1 class="text-lg font-semibold text-gray-900 mb-4">{{ groupName() }}</h1>
+  <app-product-toolbar [count]="variants().length" />
+
+  @if (variants().length > 0) {
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      @for (variant of variants(); track variant.id) {
+        <app-product-card [variant]="variant" />
+      }
+    </div>
+  } @else {
+    <p class="text-sm text-gray-500">Niciun produs gasit pentru aceasta promotie.</p>
+  }
+</div>

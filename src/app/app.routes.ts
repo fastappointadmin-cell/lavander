@@ -11,6 +11,13 @@ export const routes: Routes = [
         component: Layout,
         title: 'Lavander',
     },
+    // A promotion page is a flat listing (no nested product/variant sub-routes) — but still
+    // routed through Layout/** for the same reason as products/** above.
+    {
+        path: 'promotions/**',
+        component: Layout,
+        title: 'Lavander',
+    },
     {
         path: 'admin',
         component: AdminPage,
