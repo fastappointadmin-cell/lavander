@@ -5,12 +5,14 @@ import { AdminSubgroups } from '../admin-subgroups/admin-subgroups';
 import { AdminCategories } from '../admin-categories/admin-categories';
 import { AdminProducts } from '../admin-products/admin-products';
 import { AdminVariants } from '../admin-variants/admin-variants';
+import { AdminTags } from '../admin-tags/admin-tags';
+import { AdminPromotionGroups } from '../admin-promotion-groups/admin-promotion-groups';
 
-type AdminSection = 'properties' | 'groups' | 'subgroups' | 'categories' | 'products' | 'variants';
+type AdminSection = 'properties' | 'groups' | 'subgroups' | 'categories' | 'products' | 'variants' | 'tags' | 'promotionGroups';
 
 @Component({
   selector: 'app-admin-page',
-  imports: [AdminProperties, AdminGroups, AdminSubgroups, AdminCategories, AdminProducts, AdminVariants],
+  imports: [AdminProperties, AdminGroups, AdminSubgroups, AdminCategories, AdminProducts, AdminVariants, AdminTags, AdminPromotionGroups],
   templateUrl: './admin-page.html',
   styleUrl: './admin-page.scss',
 })
@@ -24,6 +26,8 @@ export class AdminPage {
     { id: 'categories', label: 'Categories' },
     { id: 'products', label: 'Products' },
     { id: 'variants', label: 'Variants' },
+    { id: 'tags', label: 'Tags' },
+    { id: 'promotionGroups', label: 'Promotion Groups' },
   ];
 
   protected selectSection(section: AdminSection): void {

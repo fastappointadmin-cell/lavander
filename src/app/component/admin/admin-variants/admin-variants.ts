@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ProductCatalog } from '../../../service/product-catalog';
-import { Product, ProductVariant, PropertyDefinition } from '../../../models/models';
+import { Product, ProductVariant, PropertyDefinition, Tag } from '../../../models/models';
 import { PropertyValueInput } from '../../../models/admin-requests';
 import { flattenCategories } from '../../../utils/admin-category-tree.util';
 
@@ -22,6 +22,7 @@ export class AdminVariants implements OnInit {
   protected readonly items = signal<ProductVariant[]>([]);
   protected readonly products = signal<Product[]>([]);
   protected readonly properties = signal<PropertyDefinition[]>([]);
+  protected readonly tags = signal<Tag[]>([]);
   protected readonly editingId = signal<number | null>(null);
   protected readonly errorMessage = signal<string | null>(null);
 
@@ -31,6 +32,7 @@ export class AdminVariants implements OnInit {
   protected price: number | null = null;
   protected starRating: number | null = null;
   protected propertyRows: VariantPropertyRow[] = [];
+  protected selectedTagIds = new Set<number>();
 
   private categoryPropertiesByCategoryId = new Map<number, PropertyDefinition[]>();
 
@@ -38,6 +40,7 @@ export class AdminVariants implements OnInit {
     this.load();
     this.productCatalog.getAllProducts().subscribe((products) => this.products.set(products));
     this.productCatalog.getPropertyDefinitions().subscribe((properties) => this.properties.set(properties));
+    this.productCatalog.getTags().subscribe((tags) => this.tags.set(tags));
     this.productCatalog.getCategoryGroups().subscribe((groups) => {
       this.categoryPropertiesByCategoryId = new Map(
         flattenCategories(groups).map((flattened) => [flattened.category.id, flattened.category.categoryProperties]),
@@ -94,6 +97,14 @@ export class AdminVariants implements OnInit {
     this.propertyRows = this.propertyRows.filter((_, i) => i !== index);
   }
 
+  protected toggleTagId(id: number): void {
+    if (this.selectedTagIds.has(id)) {
+      this.selectedTagIds.delete(id);
+    } else {
+      this.selectedTagIds.add(id);
+    }
+  }
+
   protected onProductChange(value: number | null): void {
     this.productId = value;
     this.propertyRows = this.buildPropertyRowsForProduct(value, this.propertyRows);
@@ -111,6 +122,7 @@ export class AdminVariants implements OnInit {
       value: pv.propertyValue,
     }));
     this.propertyRows = this.buildPropertyRowsForProduct(item.product.id, rows);
+    this.selectedTagIds = new Set(item.tags.map((t) => t.id));
     this.errorMessage.set(null);
   }
 
@@ -127,6 +139,7 @@ export class AdminVariants implements OnInit {
       value: pv.propertyValue,
     }));
     this.propertyRows = this.buildPropertyRowsForProduct(item.product.id, rows);
+    this.selectedTagIds = new Set(item.tags.map((t) => t.id));
     this.errorMessage.set(null);
   }
 
@@ -138,6 +151,7 @@ export class AdminVariants implements OnInit {
     this.price = null;
     this.starRating = null;
     this.propertyRows = [];
+    this.selectedTagIds = new Set();
     this.errorMessage.set(null);
   }
 
@@ -159,7 +173,7 @@ export class AdminVariants implements OnInit {
       price: this.price,
       starRating: this.starRating,
       variantProperties,
-      tagIds: [],
+      tagIds: Array.from(this.selectedTagIds),
     };
     const id = this.editingId();
     const result$ = id === null
