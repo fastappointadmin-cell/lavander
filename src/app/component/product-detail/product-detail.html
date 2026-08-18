@@ -26,7 +26,7 @@
       <div class="flex flex-col gap-4">
         <div>
           <p class="text-sm text-gray-500">{{ v.product.productName }}</p>
-          <h1 class="text-xl font-semibold text-gray-900 mt-1">{{ title() }}</h1>
+          <h1 class="text-xl font-semibold text-gray-900 mt-1">{{ v.variantName }}</h1>
           <p class="text-sm text-gray-500 mt-1">{{ v.variantDescription }}</p>
         </div>
 
@@ -66,6 +66,20 @@
                 >
                   {{ value }}
                 </button>
+              }
+            </div>
+          </div>
+        }
+
+        @if (v.variantProperties.length > 0) {
+          <div>
+            <p class="text-sm font-medium text-gray-900 mb-2">Specificatii</p>
+            <div class="border border-gray-200 rounded-md divide-y divide-gray-100">
+              @for (pv of v.variantProperties; track pv.id) {
+                <div class="flex items-center justify-between px-3 py-2 text-sm">
+                  <span class="text-gray-500">{{ pv.propertyDefinition.propertyName }}</span>
+                  <span class="text-gray-900 font-medium">{{ pv.propertyValue }}</span>
+                </div>
               }
             </div>
           </div>

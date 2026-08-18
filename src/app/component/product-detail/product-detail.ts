@@ -24,17 +24,6 @@ export class ProductDetail {
   protected readonly variant = this.context.selectedVariant;
   protected readonly categoryPath = this.context.selectedCategoryPath;
 
-  // Variant name plus its differentiating property values (e.g. "Ariel Detergent
-  // Lichid Alpine XXL, Lichid, 5.5L"), matching the product card's title.
-  protected readonly title = computed(() => {
-    const v = this.variant();
-    if (!v) {
-      return '';
-    }
-    const properties = v.variantProperties.map((p) => p.propertyValue);
-    return properties.length > 0 ? `${v.variantName}, ${properties.join(', ')}` : v.variantName;
-  });
-
   protected readonly tagRows = computed(() => buildVariantTagRows(this.context.selectedProductVariants()));
 
   protected readonly currentSelection = computed<VariantSelection>(() => {
