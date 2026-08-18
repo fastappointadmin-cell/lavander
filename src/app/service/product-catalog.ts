@@ -7,7 +7,9 @@ import {
   ProductCategoryGroup,
   ProductSubCategoryGroup,
   ProductVariant,
+  PromotionGroup,
   PropertyDefinition,
+  Tag,
 } from '../models/models';
 import {
   ProductCategoryGroupRequest,
@@ -15,7 +17,9 @@ import {
   ProductRequest,
   ProductSubCategoryGroupRequest,
   ProductVariantRequest,
+  PromotionGroupRequest,
   PropertyDefinitionRequest,
+  TagRequest,
 } from '../models/admin-requests';
 import { environment } from '../../env/env';
 
@@ -136,5 +140,45 @@ export class ProductCatalog {
 
     deleteVariant(id: number): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}/api/products/variants/${id}`);
+    }
+
+    // --- Tags ---
+
+    getTags(): Observable<Tag[]> {
+        return this.http.get<Tag[]>(`${this.baseUrl}/api/tags`);
+    }
+
+    createTag(request: TagRequest): Observable<Tag> {
+        return this.http.post<Tag>(`${this.baseUrl}/api/tags`, request);
+    }
+
+    updateTag(id: number, request: TagRequest): Observable<Tag> {
+        return this.http.put<Tag>(`${this.baseUrl}/api/tags/${id}`, request);
+    }
+
+    deleteTag(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/api/tags/${id}`);
+    }
+
+    // --- Promotion groups ---
+
+    getPromotionGroups(): Observable<PromotionGroup[]> {
+        return this.http.get<PromotionGroup[]>(`${this.baseUrl}/api/promotion-groups`);
+    }
+
+    createPromotionGroup(request: PromotionGroupRequest): Observable<PromotionGroup> {
+        return this.http.post<PromotionGroup>(`${this.baseUrl}/api/promotion-groups`, request);
+    }
+
+    updatePromotionGroup(id: number, request: PromotionGroupRequest): Observable<PromotionGroup> {
+        return this.http.put<PromotionGroup>(`${this.baseUrl}/api/promotion-groups/${id}`, request);
+    }
+
+    deletePromotionGroup(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/api/promotion-groups/${id}`);
+    }
+
+    getPromotionGroupVariants(id: number): Observable<ProductVariant[]> {
+        return this.http.get<ProductVariant[]>(`${this.baseUrl}/api/promotion-groups/${id}/variants`);
     }
 }

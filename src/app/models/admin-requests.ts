@@ -37,4 +37,14 @@ export interface ProductVariantRequest {
   price: number;
   starRating: number;
   variantProperties: PropertyValueInput[];
+  tagIds: number[];
+}
+
+export interface TagRequest {
+  tagName: string;
+}
+
+export interface PromotionGroupRequest {
+  groupName: string;
+  tagIds: number[];
 }

@@ -38,6 +38,7 @@ export interface Product {
 export interface ProductRef {
   id: number;
   productName: string;
+  categoryId: number;
 }
 
 export interface PropertyValue {
@@ -46,12 +47,24 @@ export interface PropertyValue {
   propertyValue: string;
 }
 
+export interface Tag {
+  id: number;
+  tagName: string;
+}
+
+export interface PromotionGroup {
+  id: number;
+  groupName: string;
+  tags: Tag[];
+}
+
 export interface ProductVariant {
   id: number;
   variantName: string;
   variantDescription: string;
   product: ProductRef;
   variantProperties: PropertyValue[];
+  tags: Tag[];
   price: number;
   starRating: number;
 }
