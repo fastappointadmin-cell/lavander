@@ -4,7 +4,7 @@ import { Context } from '../../service/context';
 import { getCategoryPathSlugs } from '../../utils/category-path.util';
 import {
   buildVariantTagRows,
-  findBestMatchingVariant,
+  findFirstVariantWithValue,
   selectionFromVariant,
   VariantSelection,
 } from '../../utils/variant-selector.util';
@@ -38,8 +38,7 @@ export class ProductDetail {
       return;
     }
 
-    const targetSelection: VariantSelection = { ...this.currentSelection(), [propertyDefinitionId]: value };
-    const match = findBestMatchingVariant(this.context.selectedProductVariants(), targetSelection);
+    const match = findFirstVariantWithValue(this.context.selectedProductVariants(), propertyDefinitionId, value);
     if (!match) {
       return;
     }

@@ -46,36 +46,23 @@ export function selectionFromVariant(variant: ProductVariant): VariantSelection 
   return selection;
 }
 
-function matchScore(variant: ProductVariant, selection: VariantSelection): number {
-  let score = 0;
-  for (const propertyValue of variant.variantProperties) {
-    if (selection[propertyValue.propertyDefinition.id] === propertyValue.propertyValue) {
-      score++;
-    }
-  }
-  return score;
-}
-
 /**
- * Finds the variant matching every value in the target selection exactly;
- * if none matches exactly (incomplete matrix), falls back to the variant
- * sharing the most matching values with the target selection.
+ * The first variant (in array order) that has the given value for the given
+ * property, regardless of any other currently selected property. Clicking a
+ * tag always leads somewhere; the other rows then re-derive their "current"
+ * value from whichever variant this lands on.
  */
-export function findBestMatchingVariant(
+export function findFirstVariantWithValue(
   variants: ProductVariant[],
-  targetSelection: VariantSelection,
+  propertyDefinitionId: number,
+  value: string,
 ): ProductVariant | null {
-  if (variants.length === 0) {
-    return null;
-  }
-
-  const requiredCount = Object.keys(targetSelection).length;
-  const exactMatch = variants.find((variant) => matchScore(variant, targetSelection) === requiredCount);
-  if (exactMatch) {
-    return exactMatch;
-  }
-
-  return variants.reduce((best, candidate) =>
-    matchScore(candidate, targetSelection) > matchScore(best, targetSelection) ? candidate : best,
+  return (
+    variants.find((variant) =>
+      variant.variantProperties.some(
+        (propertyValue) =>
+          propertyValue.propertyDefinition.id === propertyDefinitionId && propertyValue.propertyValue === value,
+      ),
+    ) ?? null
   );
 }
