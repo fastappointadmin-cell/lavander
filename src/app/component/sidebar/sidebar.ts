@@ -23,11 +23,11 @@ export class Sidebar {
     }
 
     const propertyNamesById = new Map<number, string>();
-    for (const property of category.listOfCategoryProperties) {
+    for (const property of category.categoryProperties) {
       propertyNamesById.set(property.id, property.propertyName);
     }
     for (const product of this.context.selectedCategoryProducts()) {
-      for (const property of product.listOfProductExtraProperties) {
+      for (const property of product.extraProperties) {
         propertyNamesById.set(property.id, property.propertyName);
       }
     }
@@ -38,7 +38,7 @@ export class Sidebar {
       ([propertyId, propertyName]) => {
         const counts = new Map<string, number>();
         for (const variant of variants) {
-          const match = variant.listOfVariantProperties.find(
+          const match = variant.variantProperties.find(
             (propertyValue) => propertyValue.propertyDefinition.id === propertyId,
           );
           if (match) {

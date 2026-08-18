@@ -15,25 +15,22 @@
   </ul>
   @if (activeGroup(); as active) {
     <div class="flex gap-8 p-6 min-w-[32rem]">
-      @for (subGroup of active.listOfSubGroups; track subGroup.id) {
+      @for (subGroup of active.subGroups; track subGroup.id) {
         <div class="w-48">
           <p class="font-semibold text-sm text-gray-900 mb-2">{{ subGroup.groupName }}</p>
           <ul class="space-y-1.5">
-            @for (childGroup of subGroup.listOfSubGroups; track childGroup.id) {
-              <li class="text-sm text-gray-600 hover:text-violet-600 cursor-pointer">{{ childGroup.groupName }}</li>
-            }
-            @for (category of subGroup.listOfCategories; track category.id) {
-              <li class="text-sm text-gray-600 hover:text-violet-600 cursor-pointer" (click)="onCategoryClick(category)">{{ category.categoryName }}</li>
+            @for (category of subGroup.categories; track category.id) {
+              <li class="text-sm text-gray-600 hover:text-violet-600 cursor-pointer" (click)="onCategoryClick(category, active, subGroup)">{{ category.categoryName }}</li>
             }
           </ul>
         </div>
       }
 
-      @if (active.listOfCategories.length > 0) {
+      @if (active.categories.length > 0) {
         <div class="w-48">
           <ul class="space-y-1.5">
-            @for (category of active.listOfCategories; track category.id) {
-              <li class="text-sm text-gray-600 hover:text-violet-600 cursor-pointer" (click)="onCategoryClick(category)">{{ category.categoryName }}</li>
+            @for (category of active.categories; track category.id) {
+              <li class="text-sm text-gray-600 hover:text-violet-600 cursor-pointer" (click)="onCategoryClick(category, active, undefined)">{{ category.categoryName }}</li>
             }
           </ul>
         </div>

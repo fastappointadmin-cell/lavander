@@ -6,24 +6,38 @@ export interface PropertyDefinition {
 export interface ProductCategoryGroup {
   id: number;
   groupName: string;
-  parentGroup?: ProductCategoryGroup;      
-  listOfSubGroups: ProductCategoryGroup[]; 
-  listOfCategories: ProductCategory[];     
+  subGroups: ProductSubCategoryGroup[];
+  categories: ProductCategory[];
+}
+
+export interface ProductSubCategoryGroup {
+  id: number;
+  groupName: string;
+  categories: ProductCategory[];
 }
 
 export interface ProductCategory {
   id: number;
   categoryName: string;
-  parentGroup: ProductCategoryGroup;
-  listOfCategoryProperties: PropertyDefinition[]; 
+  categoryProperties: PropertyDefinition[];
+}
+
+export interface ProductCategoryRef {
+  id: number;
+  categoryName: string;
 }
 
 export interface Product {
   id: number;
   productName: string;
   productDescription: string;
-  productCategory: ProductCategory;
-  listOfProductExtraProperties: PropertyDefinition[];
+  category: ProductCategoryRef;
+  extraProperties: PropertyDefinition[];
+}
+
+export interface ProductRef {
+  id: number;
+  productName: string;
 }
 
 export interface PropertyValue {
@@ -36,8 +50,8 @@ export interface ProductVariant {
   id: number;
   variantName: string;
   variantDescription: string;
-  product: Product;
-  listOfVariantProperties: PropertyValue[];
+  product: ProductRef;
+  variantProperties: PropertyValue[];
   price: number;
   starRating: number;
 }

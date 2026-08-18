@@ -1,6 +1,7 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
-import { ProductCategory, ProductCategoryGroup } from '../../models/models';
-import { Context } from '../../service/context';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { ProductCategory, ProductCategoryGroup, ProductSubCategoryGroup } from '../../models/models';
+import { getCategoryPathSlugs } from '../../utils/category-path.util';
 
 @Component({
   selector: 'app-category-menu-panel',
@@ -11,7 +12,8 @@ import { Context } from '../../service/context';
 export class CategoryMenuPanel {
 
   groups = input<ProductCategoryGroup[]>([]);
-  context = inject(Context);
+  categorySelected = output<void>();
+  private readonly router = inject(Router);
 
   private readonly hoveredGroupId = signal<number | null>(null);
 
@@ -25,8 +27,13 @@ export class CategoryMenuPanel {
     this.hoveredGroupId.set(groupId);
   }
 
-  protected onCategoryClick(category: ProductCategory): void {
-    this.context.setSelectedCategory(category);
+  protected onCategoryClick(
+    category: ProductCategory,
+    group: ProductCategoryGroup,
+    subGroup?: ProductSubCategoryGroup,
+  ): void {
+    this.router.navigate(['/products', ...getCategoryPathSlugs(group, category, subGroup)]);
+    this.categorySelected.emit();
   }
 
 }
