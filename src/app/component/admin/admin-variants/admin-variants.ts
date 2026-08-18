@@ -159,6 +159,7 @@ export class AdminVariants implements OnInit {
       price: this.price,
       starRating: this.starRating,
       variantProperties,
+      tagIds: [],
     };
     const id = this.editingId();
     const result$ = id === null
