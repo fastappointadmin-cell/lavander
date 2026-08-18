@@ -1,23 +1,140 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { Product, ProductCategoryGroup, ProductVariant } from '../models/models';
-import { MOCK_CATEGORY_GROUPS, MOCK_PRODUCTS, MOCK_VARIANTS } from '../mock-data/mock-catalog-data';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import {
+  Product,
+  ProductCategory,
+  ProductCategoryGroup,
+  ProductSubCategoryGroup,
+  ProductVariant,
+  PropertyDefinition,
+} from '../models/models';
+import {
+  ProductCategoryGroupRequest,
+  ProductCategoryRequest,
+  ProductRequest,
+  ProductSubCategoryGroupRequest,
+  ProductVariantRequest,
+  PropertyDefinitionRequest,
+} from '../models/admin-requests';
+import { environment } from '../../env/env';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductCatalog {
 
-getCategoryGroups(): Observable<ProductCategoryGroup[]> {
-    return of(MOCK_CATEGORY_GROUPS);
-  }
+    constructor(private http: HttpClient){}
 
-  getProducts(): Observable<Product[]> {
-    return of(MOCK_PRODUCTS);
-  }
+    private readonly baseUrl = environment.backendUrl;
 
-  getVariants(): Observable<ProductVariant[]> {
-    return of(MOCK_VARIANTS);
-  }
+    // --- Read ---
 
+    getCategoryGroups(): Observable<ProductCategoryGroup[]> {
+      return this.http.get<ProductCategoryGroup[]>(`${this.baseUrl}/api/product-categories/groups`);
+    }
+
+    getProductsByCategory(categoryId: number): Observable<Product[]> {
+        return this.http.get<Product[]>(`${this.baseUrl}/api/products/category/${categoryId}`);
+    }
+
+    getVariantsByProductId(productId: number): Observable<ProductVariant[]> {
+        return this.http.get<ProductVariant[]>(`${this.baseUrl}/api/products/${productId}/variants`);
+    }
+
+    // --- Property definitions ---
+
+    getPropertyDefinitions(): Observable<PropertyDefinition[]> {
+        return this.http.get<PropertyDefinition[]>(`${this.baseUrl}/api/property-definitions`);
+    }
+
+    createPropertyDefinition(request: PropertyDefinitionRequest): Observable<PropertyDefinition> {
+        return this.http.post<PropertyDefinition>(`${this.baseUrl}/api/property-definitions`, request);
+    }
+
+    updatePropertyDefinition(id: number, request: PropertyDefinitionRequest): Observable<PropertyDefinition> {
+        return this.http.put<PropertyDefinition>(`${this.baseUrl}/api/property-definitions/${id}`, request);
+    }
+
+    deletePropertyDefinition(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/api/property-definitions/${id}`);
+    }
+
+    // --- Groups ---
+
+    createGroup(request: ProductCategoryGroupRequest): Observable<ProductCategoryGroup> {
+        return this.http.post<ProductCategoryGroup>(`${this.baseUrl}/api/product-categories/groups`, request);
+    }
+
+    updateGroup(id: number, request: ProductCategoryGroupRequest): Observable<ProductCategoryGroup> {
+        return this.http.put<ProductCategoryGroup>(`${this.baseUrl}/api/product-categories/groups/${id}`, request);
+    }
+
+    deleteGroup(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/api/product-categories/groups/${id}`);
+    }
+
+    // --- Subgroups ---
+
+    createSubGroup(request: ProductSubCategoryGroupRequest): Observable<ProductSubCategoryGroup> {
+        return this.http.post<ProductSubCategoryGroup>(`${this.baseUrl}/api/product-categories/subgroups`, request);
+    }
+
+    updateSubGroup(id: number, request: ProductSubCategoryGroupRequest): Observable<ProductSubCategoryGroup> {
+        return this.http.put<ProductSubCategoryGroup>(`${this.baseUrl}/api/product-categories/subgroups/${id}`, request);
+    }
+
+    deleteSubGroup(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/api/product-categories/subgroups/${id}`);
+    }
+
+    // --- Categories ---
+
+    createCategory(request: ProductCategoryRequest): Observable<ProductCategory> {
+        return this.http.post<ProductCategory>(`${this.baseUrl}/api/product-categories`, request);
+    }
+
+    updateCategory(id: number, request: ProductCategoryRequest): Observable<ProductCategory> {
+        return this.http.put<ProductCategory>(`${this.baseUrl}/api/product-categories/${id}`, request);
+    }
+
+    deleteCategory(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/api/product-categories/${id}`);
+    }
+
+    // --- Products ---
+
+    getAllProducts(): Observable<Product[]> {
+        return this.http.get<Product[]>(`${this.baseUrl}/api/products`);
+    }
+
+    createProduct(request: ProductRequest): Observable<Product> {
+        return this.http.post<Product>(`${this.baseUrl}/api/products`, request);
+    }
+
+    updateProduct(id: number, request: ProductRequest): Observable<Product> {
+        return this.http.put<Product>(`${this.baseUrl}/api/products/${id}`, request);
+    }
+
+    deleteProduct(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/api/products/${id}`);
+    }
+
+    // --- Variants ---
+
+    getAllVariants(): Observable<ProductVariant[]> {
+        return this.http.get<ProductVariant[]>(`${this.baseUrl}/api/products/variants`);
+    }
+
+    createVariant(request: ProductVariantRequest): Observable<ProductVariant> {
+        return this.http.post<ProductVariant>(`${this.baseUrl}/api/products/variants`, request);
+    }
+
+    updateVariant(id: number, request: ProductVariantRequest): Observable<ProductVariant> {
+        return this.http.put<ProductVariant>(`${this.baseUrl}/api/products/variants/${id}`, request);
+    }
+
+    deleteVariant(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/api/products/variants/${id}`);
+    }
 }
