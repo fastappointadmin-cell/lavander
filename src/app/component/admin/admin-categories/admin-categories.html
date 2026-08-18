@@ -1,0 +1,94 @@
+<div class="border border-gray-200 rounded-xl bg-white p-6">
+  <h2 class="text-lg font-semibold text-gray-900 mb-4">Categories</h2>
+
+  @if (errorMessage()) {
+    <div class="mb-4 px-4 py-2 rounded-md bg-red-50 text-red-700 text-sm">{{ errorMessage() }}</div>
+  }
+
+  <form (ngSubmit)="submit()" class="flex flex-col gap-3 mb-6">
+    <div class="flex items-end gap-3 flex-wrap">
+      <label class="flex flex-col gap-1 text-sm text-gray-700">
+        Name
+        <input [(ngModel)]="categoryName" name="categoryName" required class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
+      </label>
+
+      <label class="flex items-center gap-2 text-sm text-gray-700">
+        <input type="radio" [(ngModel)]="parentType" name="parentType" value="group" />
+        Under a group
+      </label>
+      <label class="flex items-center gap-2 text-sm text-gray-700">
+        <input type="radio" [(ngModel)]="parentType" name="parentType" value="subgroup" />
+        Under a subgroup
+      </label>
+
+      @if (parentType === 'group') {
+        <label class="flex flex-col gap-1 text-sm text-gray-700">
+          Group
+          <select [(ngModel)]="parentGroupId" name="parentGroupId" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+            <option [ngValue]="null">Select a group</option>
+            @for (group of groups(); track group.id) {
+              <option [ngValue]="group.id">{{ group.groupName }}</option>
+            }
+          </select>
+        </label>
+      } @else {
+        <label class="flex flex-col gap-1 text-sm text-gray-700">
+          Subgroup
+          <select [(ngModel)]="parentSubGroupId" name="parentSubGroupId" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+            <option [ngValue]="null">Select a subgroup</option>
+            @for (entry of subGroups(); track entry.subGroup.id) {
+              <option [ngValue]="entry.subGroup.id">{{ entry.subGroup.groupName }}</option>
+            }
+          </select>
+        </label>
+      }
+    </div>
+
+    <div>
+      <p class="text-sm text-gray-700 mb-1">Category properties</p>
+      <div class="flex flex-wrap gap-3">
+        @for (property of properties(); track property.id) {
+          <label class="flex items-center gap-1.5 text-sm text-gray-700">
+            <input type="checkbox" [checked]="selectedPropertyIds.has(property.id)" (change)="togglePropertyId(property.id)" />
+            {{ property.propertyName }}
+          </label>
+        }
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button type="submit" class="px-4 py-2 rounded-md bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium">
+        {{ editingId() === null ? 'Create' : 'Save' }}
+      </button>
+      @if (editingId() !== null) {
+        <button type="button" (click)="cancel()" class="px-4 py-2 rounded-md border border-gray-300 text-sm text-gray-700">Cancel</button>
+      }
+    </div>
+  </form>
+
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="text-left text-gray-500 border-b border-gray-200">
+        <th class="py-2">ID</th>
+        <th class="py-2">Name</th>
+        <th class="py-2">Parent</th>
+        <th class="py-2">Properties</th>
+        <th class="py-2"></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (entry of items(); track entry.category.id) {
+        <tr class="border-b border-gray-100">
+          <td class="py-2">{{ entry.category.id }}</td>
+          <td class="py-2">{{ entry.category.categoryName }}</td>
+          <td class="py-2">{{ parentLabel(entry) }}</td>
+          <td class="py-2">{{ entry.category.categoryProperties.length }}</td>
+          <td class="py-2 text-right">
+            <button type="button" (click)="startEdit(entry)" class="text-violet-600 hover:underline mr-3">Edit</button>
+            <button type="button" (click)="remove(entry)" class="text-red-600 hover:underline">Delete</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
