@@ -46,13 +46,27 @@ export function selectionFromVariant(variant: ProductVariant): VariantSelection 
   return selection;
 }
 
+function matchScore(variant: ProductVariant, selection: VariantSelection): number {
+  let score = 0;
+  for (const propertyValue of variant.variantProperties) {
+    if (selection[propertyValue.propertyDefinition.id] === propertyValue.propertyValue) {
+      score++;
+    }
+  }
+  return score;
+}
+
+/** The variant matching every value in the selection exactly, or null if none does. */
+function findExactMatch(variants: ProductVariant[], selection: VariantSelection): ProductVariant | null {
+  const requiredCount = Object.keys(selection).length;
+  return variants.find((variant) => matchScore(variant, selection) === requiredCount) ?? null;
+}
+
 /**
  * The first variant (in array order) that has the given value for the given
- * property, regardless of any other currently selected property. Clicking a
- * tag always leads somewhere; the other rows then re-derive their "current"
- * value from whichever variant this lands on.
+ * property, regardless of any other property.
  */
-export function findFirstVariantWithValue(
+function findFirstVariantWithValue(
   variants: ProductVariant[],
   propertyDefinitionId: number,
   value: string,
@@ -65,4 +79,23 @@ export function findFirstVariantWithValue(
       ),
     ) ?? null
   );
+}
+
+/**
+ * The variant to land on after clicking `value` for `propertyDefinitionId`,
+ * given what's currently selected for every other row. Prefers the variant
+ * matching every currently-selected value plus the new one exactly (so every
+ * variant stays reachable by tag-clicking whenever a matching one exists);
+ * only falls back to the first variant with the clicked value alone when the
+ * matrix is genuinely sparse (no variant has that exact combination), so a
+ * click is never a dead end.
+ */
+export function findVariantForTagClick(
+  variants: ProductVariant[],
+  currentSelection: VariantSelection,
+  propertyDefinitionId: number,
+  value: string,
+): ProductVariant | null {
+  const targetSelection: VariantSelection = { ...currentSelection, [propertyDefinitionId]: value };
+  return findExactMatch(variants, targetSelection) ?? findFirstVariantWithValue(variants, propertyDefinitionId, value);
 }
