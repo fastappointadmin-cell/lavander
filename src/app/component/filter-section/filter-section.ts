@@ -1,4 +1,4 @@
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 
 export interface FilterOption {
   label: string;
@@ -14,6 +14,8 @@ export interface FilterOption {
 export class FilterSection {
   title = input.required<string>();
   options = input<FilterOption[]>([]);
+  selectedValues = input<Set<string>>(new Set());
+  valueToggled = output<string>();
 
   private readonly visibleLimit = 6;
 
@@ -33,5 +35,13 @@ export class FilterSection {
 
   protected showMore(): void {
     this.showAll.set(true);
+  }
+
+  protected isSelected(label: string): boolean {
+    return this.selectedValues().has(label);
+  }
+
+  protected onToggle(label: string): void {
+    this.valueToggled.emit(label);
   }
 }

@@ -94,6 +94,75 @@ export class Context {
         { initialValue: [] },
     );
 
+    // Sidebar filter selections live in the `filter` query param (repeated,
+    // one `propertyId:value` pair per entry) rather than in-memory state, so a
+    // filtered URL can be copy-pasted or refreshed without losing the selection.
+    // Navigating to a different category (a plain path change with no
+    // queryParamsHandling) naturally drops it, which is also the desired reset.
+    readonly filterSelections: Signal<Map<number, Set<string>>> = computed(() => {
+        const urlTree = this.router.parseUrl(this.currentUrl());
+        const map = new Map<number, Set<string>>();
+        for (const raw of urlTree.queryParamMap.getAll('filter')) {
+            const separatorIndex = raw.indexOf(':');
+            if (separatorIndex === -1) {
+                continue;
+            }
+            const propertyId = Number(raw.slice(0, separatorIndex));
+            const value = raw.slice(separatorIndex + 1);
+            if (!Number.isFinite(propertyId) || value.length === 0) {
+                continue;
+            }
+            const values = map.get(propertyId) ?? new Set<string>();
+            values.add(value);
+            map.set(propertyId, values);
+        }
+        return map;
+    });
+
+    // A variant must match every property that has at least one selected value
+    // (AND across properties); within one property, any selected value matches (OR).
+    readonly filteredCategoryVariants: Signal<ProductVariant[]> = computed(() => {
+        const variants = this.selectedCategoryVariants();
+        const filters = this.filterSelections();
+        if (filters.size === 0) {
+            return variants;
+        }
+        return variants.filter((variant) =>
+            Array.from(filters.entries()).every(([propertyId, values]) =>
+                variant.variantProperties.some(
+                    (propertyValue) => propertyValue.propertyDefinition.id === propertyId && values.has(propertyValue.propertyValue),
+                ),
+            ),
+        );
+    });
+
+    toggleFilterValue(propertyId: number, value: string): void {
+        const next = new Map(this.filterSelections());
+        const values = new Set(next.get(propertyId) ?? []);
+        if (values.has(value)) {
+            values.delete(value);
+        } else {
+            values.add(value);
+        }
+        if (values.size === 0) {
+            next.delete(propertyId);
+        } else {
+            next.set(propertyId, values);
+        }
+
+        const pairs: string[] = [];
+        for (const [id, vals] of next) {
+            for (const v of vals) {
+                pairs.push(`${id}:${v}`);
+            }
+        }
+
+        const urlTree = this.router.parseUrl(this.router.url);
+        const { filter: _existingFilter, ...restParams } = urlTree.queryParams;
+        urlTree.queryParams = pairs.length > 0 ? { ...restParams, filter: pairs } : restParams;
+        this.router.navigateByUrl(urlTree, { replaceUrl: true });
+    }
+
     readonly selectedProductVariants: Signal<ProductVariant[]> = toSignal(
         toObservable(this.selectedProductId).pipe(
             switchMap((productId) => {

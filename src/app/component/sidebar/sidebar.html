@@ -1,5 +1,10 @@
 <div class="md:w-64 w-16 flex flex-col gap-3 transition-all duration-300">
   @for (section of filterSections(); track section.title) {
-    <app-filter-section [title]="section.title" [options]="section.options" />
+    <app-filter-section
+      [title]="section.title"
+      [options]="section.options"
+      [selectedValues]="selectedValuesFor(section.propertyId)"
+      (valueToggled)="onValueToggled(section.propertyId, $event)"
+    />
   }
 </div>

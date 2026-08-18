@@ -26,7 +26,12 @@
       @for (option of visibleOptions(); track option.label) {
         <li>
           <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-            <input type="checkbox" class="rounded border-gray-300 text-violet-600 focus:ring-violet-500" />
+            <input
+              type="checkbox"
+              class="rounded border-gray-300 text-violet-600 focus:ring-violet-500"
+              [checked]="isSelected(option.label)"
+              (change)="onToggle(option.label)"
+            />
             <span>{{ option.label }} <span class="text-gray-400">({{ option.count }})</span></span>
           </label>
         </li>

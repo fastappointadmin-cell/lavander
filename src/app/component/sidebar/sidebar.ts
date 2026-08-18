@@ -3,6 +3,7 @@ import { Context } from '../../service/context';
 import { FilterSection, FilterOption } from '../filter-section/filter-section';
 
 interface FilterSectionData {
+  propertyId: number;
   title: string;
   options: FilterOption[];
 }
@@ -14,7 +15,7 @@ interface FilterSectionData {
   styleUrl: './sidebar.scss',
 })
 export class Sidebar {
-  private readonly context = inject(Context);
+  protected readonly context = inject(Context);
 
   protected readonly filterSections = computed<FilterSectionData[]>(() => {
     const category = this.context.selectedCategorySignal();
@@ -46,6 +47,7 @@ export class Sidebar {
           }
         }
         return {
+          propertyId,
           title: propertyName,
           options: Array.from(counts.entries()).map(([label, count]) => ({ label, count })),
         };
@@ -54,4 +56,12 @@ export class Sidebar {
 
     return propertySections.filter((section) => section.options.length > 0);
   });
+
+  protected selectedValuesFor(propertyId: number): Set<string> {
+    return this.context.filterSelections().get(propertyId) ?? new Set();
+  }
+
+  protected onValueToggled(propertyId: number, value: string): void {
+    this.context.toggleFilterValue(propertyId, value);
+  }
 }

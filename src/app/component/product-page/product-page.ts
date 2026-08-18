@@ -11,5 +11,5 @@ import { ProductToolbar } from '../product-toolbar/product-toolbar';
 })
 export class ProductPage {
   protected readonly context = inject(Context);
-  protected readonly variants = this.context.selectedCategoryVariants;
+  protected readonly variants = this.context.filteredCategoryVariants;
 }
