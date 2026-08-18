@@ -27,6 +27,7 @@
                <app-category-menu-panel
                    class="absolute left-6 md:left-16 lg:left-24 xl:left-32 top-full z-50"
                    [groups]="categoryGroups()"
+                   (categorySelected)="onCategorySelected()"
                />
            }
        </div>
@@ -40,6 +41,10 @@
        </label>
 
        <div class="flex items-center gap-3 justify-self-end">
+           <a routerLink="/admin" class="hidden md:inline-flex items-center px-3 py-2 rounded-full hover:bg-gray-50 active:scale-95 transition-all text-gray-700 text-sm">
+               Admin
+           </a>
+
            <button aria-label="account" type="button" class="hidden md:inline-flex p-2 rounded-full hover:bg-gray-50 active:scale-95 transition-all text-gray-700">
                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>

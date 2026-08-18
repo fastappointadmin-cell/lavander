@@ -1,12 +1,13 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
 import { ProductCatalog } from '../../service/product-catalog';
 import { CategoryMenuPanel } from '../category-menu-panel/category-menu-panel';
 import { Context } from '../../service/context';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CategoryMenuPanel],
+  imports: [CategoryMenuPanel, RouterLink],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
@@ -38,5 +39,10 @@ export class Navbar {
   protected onMenuButtonClick(): void {
     clearTimeout(this.closeTimeoutId);
     this.hovered.set(true);
+  }
+
+  protected onCategorySelected(): void {
+    clearTimeout(this.closeTimeoutId);
+    this.hovered.set(false);
   }
 }
