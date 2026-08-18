@@ -1,0 +1,53 @@
+<div class="border border-gray-200 rounded-xl bg-white p-6">
+  <h2 class="text-lg font-semibold text-gray-900 mb-4">Subgroups</h2>
+
+  @if (errorMessage()) {
+    <div class="mb-4 px-4 py-2 rounded-md bg-red-50 text-red-700 text-sm">{{ errorMessage() }}</div>
+  }
+
+  <form (ngSubmit)="submit()" class="flex items-end gap-3 mb-6 flex-wrap">
+    <label class="flex flex-col gap-1 text-sm text-gray-700">
+      Name
+      <input [(ngModel)]="groupName" name="groupName" required class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
+    </label>
+    <label class="flex flex-col gap-1 text-sm text-gray-700">
+      Parent group
+      <select [(ngModel)]="parentGroupId" name="parentGroupId" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
+        <option [ngValue]="null">Select a group</option>
+        @for (group of groups(); track group.id) {
+          <option [ngValue]="group.id">{{ group.groupName }}</option>
+        }
+      </select>
+    </label>
+    <button type="submit" class="px-4 py-2 rounded-md bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium">
+      {{ editingId() === null ? 'Create' : 'Save' }}
+    </button>
+    @if (editingId() !== null) {
+      <button type="button" (click)="cancel()" class="px-4 py-2 rounded-md border border-gray-300 text-sm text-gray-700">Cancel</button>
+    }
+  </form>
+
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="text-left text-gray-500 border-b border-gray-200">
+        <th class="py-2">ID</th>
+        <th class="py-2">Name</th>
+        <th class="py-2">Parent group</th>
+        <th class="py-2"></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (entry of items(); track entry.subGroup.id) {
+        <tr class="border-b border-gray-100">
+          <td class="py-2">{{ entry.subGroup.id }}</td>
+          <td class="py-2">{{ entry.subGroup.groupName }}</td>
+          <td class="py-2">{{ groupNameFor(entry.parentGroupId) }}</td>
+          <td class="py-2 text-right">
+            <button type="button" (click)="startEdit(entry)" class="text-violet-600 hover:underline mr-3">Edit</button>
+            <button type="button" (click)="remove(entry)" class="text-red-600 hover:underline">Delete</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
