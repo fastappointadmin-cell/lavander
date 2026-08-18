@@ -13,6 +13,14 @@
       <p class="text-sm text-gray-900 font-medium leading-snug mt-0.5">{{ variant().variantName }}</p>
     </div>
 
+    @if (variant().tags.length > 0) {
+      <div class="flex flex-wrap gap-1">
+        @for (tag of variant().tags; track tag.id) {
+          <span class="px-2 py-0.5 rounded-full bg-violet-50 text-violet-600 text-[11px] font-medium leading-none">{{ tag.tagName }}</span>
+        }
+      </div>
+    }
+
     <div class="flex items-center gap-0.5">
       @for (star of starIndices; track star) {
         <svg
