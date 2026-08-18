@@ -71,20 +71,6 @@
           </div>
         }
 
-        @if (v.variantProperties.length > 0) {
-          <div>
-            <p class="text-sm font-medium text-gray-900 mb-2">Specificatii</p>
-            <div class="border border-gray-200 rounded-md divide-y divide-gray-100">
-              @for (pv of v.variantProperties; track pv.id) {
-                <div class="flex items-center justify-between px-3 py-2 text-sm">
-                  <span class="text-gray-500">{{ pv.propertyDefinition.propertyName }}</span>
-                  <span class="text-gray-900 font-medium">{{ pv.propertyValue }}</span>
-                </div>
-              }
-            </div>
-          </div>
-        }
-
         <button
           type="button"
           class="min-h-11 flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 active:scale-95 text-white text-sm font-medium rounded-md transition-all mt-2"
@@ -97,6 +83,20 @@
           Adauga in Cos
         </button>
       </div>
+
+      @if (v.variantProperties.length > 0) {
+        <div class="max-w-md w-full mx-auto lg:mx-0">
+          <p class="text-sm font-medium text-gray-900 mb-2">Specificatii</p>
+          <div class="border border-gray-200 rounded-md divide-y divide-gray-100">
+            @for (pv of v.variantProperties; track pv.id) {
+              <div class="flex items-center justify-between px-3 py-2 text-sm">
+                <span class="text-gray-500">{{ pv.propertyDefinition.propertyName }}</span>
+                <span class="text-gray-900 font-medium">{{ pv.propertyValue }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
     </div>
   </div>
 } @else {
