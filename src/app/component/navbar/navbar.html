@@ -27,6 +27,7 @@
                <app-category-menu-panel
                    class="absolute left-6 md:left-16 lg:left-24 xl:left-32 top-full z-50"
                    [groups]="categoryGroups()"
+                   [promotionGroups]="promotionGroups()"
                    (categorySelected)="onCategorySelected()"
                />
            }

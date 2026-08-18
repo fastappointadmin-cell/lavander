@@ -1,7 +1,7 @@
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { ProductCategory, ProductCategoryGroup, ProductSubCategoryGroup } from '../../models/models';
-import { getCategoryPathSlugs } from '../../utils/category-path.util';
+import { ProductCategory, ProductCategoryGroup, ProductSubCategoryGroup, PromotionGroup } from '../../models/models';
+import { getCategoryPathSlugs, slugify } from '../../utils/category-path.util';
 
 @Component({
   selector: 'app-category-menu-panel',
@@ -12,6 +12,7 @@ import { getCategoryPathSlugs } from '../../utils/category-path.util';
 export class CategoryMenuPanel {
 
   groups = input<ProductCategoryGroup[]>([]);
+  promotionGroups = input<PromotionGroup[]>([]);
   categorySelected = output<void>();
   private readonly router = inject(Router);
 
@@ -33,6 +34,11 @@ export class CategoryMenuPanel {
     subGroup?: ProductSubCategoryGroup,
   ): void {
     this.router.navigate(['/products', ...getCategoryPathSlugs(group, category, subGroup)]);
+    this.categorySelected.emit();
+  }
+
+  protected onPromotionClick(promotionGroup: PromotionGroup): void {
+    this.router.navigate(['/promotions', slugify(promotionGroup.groupName)]);
     this.categorySelected.emit();
   }
 

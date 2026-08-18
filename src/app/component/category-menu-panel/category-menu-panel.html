@@ -12,6 +12,14 @@
         <span class="text-gray-400">&rsaquo;</span>
       </li>
     }
+    @for (promo of promotionGroups(); track promo.id) {
+      <li
+        (click)="onPromotionClick(promo)"
+        class="px-4 py-2.5 text-sm cursor-pointer transition-colors text-gray-900 hover:bg-violet-50 hover:text-violet-600"
+      >
+        <span>{{ promo.groupName }}</span>
+      </li>
+    }
   </ul>
   @if (activeGroup(); as active) {
     <div class="flex gap-8 p-6 min-w-[32rem]">

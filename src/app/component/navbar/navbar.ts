@@ -19,6 +19,10 @@ export class Navbar {
     initialValue: [],
   });
 
+  protected readonly promotionGroups = toSignal(this.productCatalog.getPromotionGroups(), {
+    initialValue: [],
+  });
+
   private readonly hovered = signal(false);
   private readonly categorySelected = computed(() => this.context.selectedCategorySignal() !== null);
   private closeTimeoutId: ReturnType<typeof setTimeout> | undefined;
