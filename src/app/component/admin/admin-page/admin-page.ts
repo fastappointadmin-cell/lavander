@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { AdminProperties } from '../admin-properties/admin-properties';
 import { AdminGroups } from '../admin-groups/admin-groups';
 import { AdminSubgroups } from '../admin-subgroups/admin-subgroups';
@@ -30,7 +30,18 @@ export class AdminPage {
     { id: 'promotionGroups', label: 'Promotion Groups' },
   ];
 
+  protected readonly activeSectionLabel = computed(
+    () => this.sections.find((section) => section.id === this.activeSection())?.label ?? '',
+  );
+
+  protected readonly mobileSectionsOpen = signal(false);
+
   protected selectSection(section: AdminSection): void {
     this.activeSection.set(section);
+    this.mobileSectionsOpen.set(false);
+  }
+
+  protected onMobileSectionsToggle(): void {
+    this.mobileSectionsOpen.update((open) => !open);
   }
 }
