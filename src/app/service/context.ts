@@ -69,17 +69,22 @@ export class Context {
     });
 
     // Sticky, unlike routeSegments: keeps the last /products/** route the user was on
-    // (category list, or a specific product/variant) even after navigating somewhere
-    // with no route of its own (cart, promotions, ...), so "home" can return them to
-    // exactly where they were instead of dropping back to the bare category list.
+    // (category list, or a specific product/variant) — including its filter query
+    // params — even after navigating somewhere with no route of its own (cart,
+    // promotions, ...), so "home" can return them to exactly where they were instead
+    // of dropping back to the bare, unfiltered category list.
     private readonly _lastProductsPath = signal<string[] | null>(null);
     readonly lastProductsPath: Signal<string[] | null> = this._lastProductsPath.asReadonly();
+
+    private readonly _lastProductsQueryParams = signal<Record<string, string | string[]>>({});
+    readonly lastProductsQueryParams: Signal<Record<string, string | string[]>> = this._lastProductsQueryParams.asReadonly();
 
     constructor() {
         effect(() => {
             const segments = this.routeSegments();
             if (segments.length > 0) {
                 this._lastProductsPath.set(segments);
+                this._lastProductsQueryParams.set(this.router.parseUrl(this.currentUrl()).queryParams);
             }
         });
     }

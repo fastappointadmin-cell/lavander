@@ -61,6 +61,8 @@ export class Navbar {
     return segments ? ['/products', ...segments] : ['/'];
   });
 
+  protected readonly homeQueryParams = computed(() => this.context.lastProductsQueryParams());
+
   protected onMenuEnter(): void {
     clearTimeout(this.closeTimeoutId);
     this.hovered.set(true);
