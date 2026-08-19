@@ -72,6 +72,7 @@ export interface ProductVariant {
 
 export interface Cart {
   id: number;
+  ownerToken: string;
   items: CartItem[];
 }
 
