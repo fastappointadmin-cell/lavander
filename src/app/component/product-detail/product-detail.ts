@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Context } from '../../service/context';
 import { ProductCatalog } from '../../service/product-catalog';
@@ -44,6 +44,12 @@ export class ProductDetail {
   protected readonly selectedReviewRating = signal(0);
   protected readonly submittingReview = signal(false);
   protected readonly reviewSubmitted = signal(false);
+
+  private readonly resetReviewStateOnVariantChange = effect(() => {
+    this.context.selectedVariant();
+    this.selectedReviewRating.set(0);
+    this.reviewSubmitted.set(false);
+  });
 
   protected onTagClick(propertyDefinitionId: number, value: string): void {
     const path = this.categoryPath();
