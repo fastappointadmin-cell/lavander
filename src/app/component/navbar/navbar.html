@@ -26,8 +26,10 @@
    </div>
 
    @if (mobileMenuOpen()) {
-       <div class="md:hidden fixed inset-0 z-50 bg-white overflow-y-auto">
-           <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+       <div class="md:hidden fixed inset-0 z-40 bg-black/30 backdrop-blur-sm" (click)="onMobileMenuToggle()"></div>
+
+       <div class="md:hidden fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-xl max-h-[75vh] flex flex-col">
+           <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 shrink-0">
                <p class="text-base font-semibold text-gray-900">Categorii</p>
                <button
                    type="button"
@@ -42,7 +44,7 @@
                </button>
            </div>
 
-           <div class="px-2 py-2">
+           <div class="px-2 py-2 overflow-y-auto">
                @for (group of categoryGroups(); track group.id) {
                    <div class="border-b border-gray-100">
                        <button
