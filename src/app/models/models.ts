@@ -69,3 +69,14 @@ export interface ProductVariant {
   starRating: number;
   reviewCount: number;
 }
+
+export interface Cart {
+  id: number;
+  items: CartItem[];
+}
+
+export interface CartItem {
+  id: number;
+  variant: ProductVariant;
+  quantity: number;
+}

@@ -51,3 +51,12 @@ export interface PromotionGroupRequest {
 export interface ReviewRequest {
   rating: number;
 }
+
+export interface AddCartItemRequest {
+  variantId: number;
+  quantity: number;
+}
+
+export interface UpdateCartItemRequest {
+  quantity: number;
+}
