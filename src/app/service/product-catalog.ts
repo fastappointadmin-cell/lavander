@@ -19,6 +19,7 @@ import {
   ProductVariantRequest,
   PromotionGroupRequest,
   PropertyDefinitionRequest,
+  ReviewRequest,
   TagRequest,
 } from '../models/admin-requests';
 import { environment } from '../../env/env';
@@ -140,6 +141,10 @@ export class ProductCatalog {
 
     deleteVariant(id: number): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}/api/products/variants/${id}`);
+    }
+
+    submitReview(variantId: number, request: ReviewRequest): Observable<ProductVariant> {
+        return this.http.post<ProductVariant>(`${this.baseUrl}/api/products/variants/${variantId}/reviews`, request);
     }
 
     // --- Tags ---

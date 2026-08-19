@@ -67,4 +67,5 @@ export interface ProductVariant {
   tags: Tag[];
   price: number;
   starRating: number;
+  reviewCount: number;
 }

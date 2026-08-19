@@ -30,7 +30,6 @@ export class AdminVariants implements OnInit {
   protected variantDescription = '';
   protected productId: number | null = null;
   protected price: number | null = null;
-  protected starRating: number | null = null;
   protected propertyRows: VariantPropertyRow[] = [];
   protected selectedTagIds = new Set<number>();
 
@@ -116,7 +115,6 @@ export class AdminVariants implements OnInit {
     this.variantDescription = item.variantDescription;
     this.productId = item.product.id;
     this.price = item.price;
-    this.starRating = item.starRating;
     const rows = item.variantProperties.map((pv) => ({
       propertyDefinitionId: pv.propertyDefinition.id,
       value: pv.propertyValue,
@@ -133,7 +131,6 @@ export class AdminVariants implements OnInit {
     this.variantDescription = item.variantDescription;
     this.productId = item.product.id;
     this.price = item.price;
-    this.starRating = item.starRating;
     const rows = item.variantProperties.map((pv) => ({
       propertyDefinitionId: pv.propertyDefinition.id,
       value: pv.propertyValue,
@@ -149,15 +146,14 @@ export class AdminVariants implements OnInit {
     this.variantDescription = '';
     this.productId = null;
     this.price = null;
-    this.starRating = null;
     this.propertyRows = [];
     this.selectedTagIds = new Set();
     this.errorMessage.set(null);
   }
 
   protected submit(): void {
-    if (this.productId === null || this.price === null || this.starRating === null) {
-      this.errorMessage.set('Product, price and star rating are required');
+    if (this.productId === null || this.price === null) {
+      this.errorMessage.set('Product and price are required');
       return;
     }
     this.errorMessage.set(null);
@@ -171,7 +167,6 @@ export class AdminVariants implements OnInit {
       variantDescription: this.variantDescription,
       productId: this.productId,
       price: this.price,
-      starRating: this.starRating,
       variantProperties,
       tagIds: Array.from(this.selectedTagIds),
     };

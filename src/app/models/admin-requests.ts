@@ -35,7 +35,6 @@ export interface ProductVariantRequest {
   variantDescription: string;
   productId: number;
   price: number;
-  starRating: number;
   variantProperties: PropertyValueInput[];
   tagIds: number[];
 }
@@ -47,4 +46,8 @@ export interface TagRequest {
 export interface PromotionGroupRequest {
   groupName: string;
   tagIds: number[];
+}
+
+export interface ReviewRequest {
+  rating: number;
 }
