@@ -1,4 +1,39 @@
 <div class="min-w-0 border border-gray-200 rounded-xl bg-white p-6">
+  <button
+    type="button"
+    (click)="onMobileFiltersToggle()"
+    class="md:hidden mb-4 w-full flex items-center justify-center gap-2 min-h-11 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 active:scale-95 transition-all"
+  >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="4" y1="6" x2="20" y2="6"/>
+      <line x1="8" y1="12" x2="16" y2="12"/>
+      <line x1="11" y1="18" x2="13" y2="18"/>
+    </svg>
+    Filtre
+  </button>
+
+  @if (mobileFiltersOpen()) {
+    <div class="md:hidden fixed inset-0 z-50 bg-white overflow-y-auto">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+        <p class="text-base font-semibold text-gray-900">Filtre</p>
+        <button
+          type="button"
+          aria-label="close-filters-menu"
+          (click)="onMobileFiltersToggle()"
+          class="p-2 rounded-full hover:bg-gray-50 active:scale-95 transition-all text-gray-700"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="p-4">
+        <app-sidebar></app-sidebar>
+      </div>
+    </div>
+  }
+
   <app-product-toolbar [count]="variants().length" />
 
   @if (variants().length > 0) {
