@@ -2,11 +2,13 @@
 
 FROM node:22-alpine AS build
 WORKDIR /app
+ARG BACKEND_URL
 
 COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
+RUN node scripts/set-env.mjs
 RUN npm run build
 
 FROM node:22-alpine AS runtime
