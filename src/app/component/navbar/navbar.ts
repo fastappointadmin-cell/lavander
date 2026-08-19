@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { filter, map } from 'rxjs';
 import { ProductCatalog } from '../../service/product-catalog';
 import { CartStore } from '../../service/cart-store';
 import { CategoryMenuPanel } from '../category-menu-panel/category-menu-panel';
@@ -30,10 +31,22 @@ export class Navbar {
   });
 
   private readonly hovered = signal(false);
-  // A category or a promotion counts as "something selected" — either one should let
-  // the menu default to closed, not just category selection.
+
+  private readonly isCartRoute = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map(() => this.router.url === '/cart'),
+    ),
+    { initialValue: this.router.url === '/cart' },
+  );
+
+  // A category, a promotion, or the cart route counts as "something selected" — any of
+  // these should let the menu default to closed, not just category selection.
   private readonly menuTargetSelected = computed(
-    () => this.context.selectedCategorySignal() !== null || this.context.selectedPromotionGroup() !== null,
+    () =>
+      this.context.selectedCategorySignal() !== null ||
+      this.context.selectedPromotionGroup() !== null ||
+      this.isCartRoute(),
   );
   private closeTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
