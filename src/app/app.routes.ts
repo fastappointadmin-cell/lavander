@@ -19,6 +19,11 @@ export const routes: Routes = [
         title: 'Lavander',
     },
     {
+        path: 'cart',
+        component: Layout,
+        title: 'Lavander - Cos',
+    },
+    {
         path: 'admin',
         component: AdminPage,
         title: 'Lavander Admin',
