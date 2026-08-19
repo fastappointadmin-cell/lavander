@@ -2,6 +2,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Context } from '../../service/context';
 import { ProductCatalog } from '../../service/product-catalog';
+import { CartStore } from '../../service/cart-store';
 import { ProductVariant } from '../../models/models';
 import { getCategoryPathSlugs } from '../../utils/category-path.util';
 import {
@@ -21,6 +22,7 @@ export class ProductDetail {
   private readonly context = inject(Context);
   private readonly router = inject(Router);
   private readonly productCatalog = inject(ProductCatalog);
+  private readonly cartStore = inject(CartStore);
 
   protected readonly starIndices = [1, 2, 3, 4, 5];
 
@@ -99,5 +101,13 @@ export class ProductDetail {
         this.submittingReview.set(false);
       },
     });
+  }
+
+  protected onAddToCart(): void {
+    const variant = this.variant();
+    if (!variant) {
+      return;
+    }
+    this.cartStore.addItem(variant.id, 1);
   }
 }
