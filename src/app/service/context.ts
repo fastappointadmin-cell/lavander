@@ -149,9 +149,16 @@ export class Context {
         } else {
             next.set(propertyId, values);
         }
+        this.setFilterQueryParam(next);
+    }
 
+    clearFilters(): void {
+        this.setFilterQueryParam(new Map());
+    }
+
+    private setFilterQueryParam(filters: Map<number, Set<string>>): void {
         const pairs: string[] = [];
-        for (const [id, vals] of next) {
+        for (const [id, vals] of filters) {
             for (const v of vals) {
                 pairs.push(`${id}:${v}`);
             }

@@ -19,4 +19,8 @@ export class ProductPage {
   protected onMobileFiltersToggle(): void {
     this.mobileFiltersOpen.update((open) => !open);
   }
+
+  protected onMobileFiltersClear(): void {
+    this.context.clearFilters();
+  }
 }
