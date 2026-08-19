@@ -1,4 +1,5 @@
 import { Component, computed, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { AdminProperties } from '../admin-properties/admin-properties';
 import { AdminGroups } from '../admin-groups/admin-groups';
 import { AdminSubgroups } from '../admin-subgroups/admin-subgroups';
@@ -12,7 +13,7 @@ type AdminSection = 'properties' | 'groups' | 'subgroups' | 'categories' | 'prod
 
 @Component({
   selector: 'app-admin-page',
-  imports: [AdminProperties, AdminGroups, AdminSubgroups, AdminCategories, AdminProducts, AdminVariants, AdminTags, AdminPromotionGroups],
+  imports: [RouterLink, AdminProperties, AdminGroups, AdminSubgroups, AdminCategories, AdminProducts, AdminVariants, AdminTags, AdminPromotionGroups],
   templateUrl: './admin-page.html',
   styleUrl: './admin-page.scss',
 })
