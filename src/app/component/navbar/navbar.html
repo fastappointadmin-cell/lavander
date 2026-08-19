@@ -171,13 +171,30 @@
                </svg>
            </button>
 
-           <button aria-label="cart" type="button" class="hidden md:inline-flex p-2 rounded-full hover:bg-gray-50 active:scale-95 transition-all text-gray-700">
-               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                   <circle cx="9" cy="21" r="1"/>
-                   <circle cx="20" cy="21" r="1"/>
-                   <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-               </svg>
-           </button>
+           <div class="relative hidden md:block">
+               <button
+                   aria-label="cart"
+                   type="button"
+                   (click)="onCartIconClick()"
+                   class="relative inline-flex p-2 rounded-full hover:bg-gray-50 active:scale-95 transition-all text-gray-700"
+               >
+                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                       <circle cx="9" cy="21" r="1"/>
+                       <circle cx="20" cy="21" r="1"/>
+                       <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                   </svg>
+                   @if (cartStore.itemCount() > 0) {
+                       <span class="absolute top-0 right-0 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-violet-600 text-white text-[10px] font-medium leading-none">
+                           {{ cartStore.itemCount() }}
+                       </span>
+                   }
+               </button>
+
+               @if (cartDropdownOpen()) {
+                   <div class="fixed inset-0 z-40" (click)="onCartDropdownBackdropClick()"></div>
+                   <app-cart-dropdown class="absolute right-0 top-full z-50 mt-2"></app-cart-dropdown>
+               }
+           </div>
 
            <button aria-label="menu-btn" type="button" class="menu-btn inline-block md:hidden active:scale-90 transition">
                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30">
@@ -201,14 +218,23 @@
            <span class="text-[11px] font-medium">Acasa</span>
        </a>
 
-       <button aria-label="cart" type="button" class="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 text-gray-500 active:scale-95 transition-all">
+       <a
+           routerLink="/cart"
+           routerLinkActive="text-violet-600"
+           class="relative flex-1 flex flex-col items-center justify-center gap-1 py-2.5 text-gray-500 active:scale-95 transition-all"
+       >
            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                <circle cx="9" cy="21" r="1"/>
                <circle cx="20" cy="21" r="1"/>
                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
            </svg>
+           @if (cartStore.itemCount() > 0) {
+               <span class="absolute top-1 right-6 min-w-[16px] h-[16px] px-1 flex items-center justify-center rounded-full bg-violet-600 text-white text-[9px] font-medium leading-none">
+                   {{ cartStore.itemCount() }}
+               </span>
+           }
            <span class="text-[11px] font-medium">Cos</span>
-       </button>
+       </a>
 
        <button aria-label="account" type="button" class="flex-1 flex flex-col items-center justify-center gap-1 py-2.5 text-gray-500 active:scale-95 transition-all">
            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

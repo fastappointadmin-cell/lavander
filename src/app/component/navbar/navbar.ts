@@ -2,14 +2,16 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ProductCatalog } from '../../service/product-catalog';
+import { CartStore } from '../../service/cart-store';
 import { CategoryMenuPanel } from '../category-menu-panel/category-menu-panel';
+import { CartDropdown } from '../cart-dropdown/cart-dropdown';
 import { Context } from '../../service/context';
 import { ProductCategory, ProductCategoryGroup, ProductSubCategoryGroup, PromotionGroup } from '../../models/models';
 import { getCategoryPathSlugs, slugify } from '../../utils/category-path.util';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CategoryMenuPanel, RouterLink, RouterLinkActive],
+  imports: [CategoryMenuPanel, RouterLink, RouterLinkActive, CartDropdown],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
@@ -17,6 +19,7 @@ export class Navbar {
   private readonly productCatalog = inject(ProductCatalog);
   private readonly context = inject(Context);
   private readonly router = inject(Router);
+  protected readonly cartStore = inject(CartStore);
 
   protected readonly categoryGroups = toSignal(this.productCatalog.getCategoryGroups(), {
     initialValue: [],
@@ -81,5 +84,15 @@ export class Navbar {
   protected onMobilePromotionClick(promotionGroup: PromotionGroup): void {
     this.router.navigate(['/promotions', slugify(promotionGroup.groupName)]);
     this.mobileMenuOpen.set(false);
+  }
+
+  protected readonly cartDropdownOpen = signal(false);
+
+  protected onCartIconClick(): void {
+    this.cartDropdownOpen.update((open) => !open);
+  }
+
+  protected onCartDropdownBackdropClick(): void {
+    this.cartDropdownOpen.set(false);
   }
 }

@@ -1,0 +1,36 @@
+<div class="w-80 max-h-[70vh] overflow-y-auto bg-white border border-gray-200 rounded-xl shadow-lg p-4 flex flex-col gap-3">
+  @if (cartStore.items().length > 0) {
+    @for (item of cartStore.items(); track item.id) {
+      <div class="flex items-center gap-3 pb-3 border-b border-gray-100 last:border-b-0 last:pb-0">
+        <div class="flex-1 min-w-0">
+          <p class="text-sm text-gray-900 font-medium truncate">{{ item.variant.variantName }}</p>
+          @if (item.variant.variantProperties.length > 0) {
+            <p class="text-xs text-gray-500">{{ variantPropertiesLabel(item) }}</p>
+          }
+          <div class="flex items-center gap-2 mt-1">
+            <button type="button" (click)="onDecrement(item)" class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded text-gray-700 text-xs hover:bg-gray-50 active:scale-95 transition-all">-</button>
+            <span class="text-xs text-gray-900">{{ item.quantity }}</span>
+            <button type="button" (click)="onIncrement(item)" class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded text-gray-700 text-xs hover:bg-gray-50 active:scale-95 transition-all">+</button>
+          </div>
+        </div>
+        <button type="button" (click)="onRemove(item)" aria-label="remove-item" class="p-1.5 rounded-full hover:bg-gray-50 active:scale-95 transition-all text-gray-400 hover:text-red-600 shrink-0">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    }
+
+    <div class="flex items-center justify-between pt-1">
+      <p class="text-xs text-gray-500">Subtotal</p>
+      <p class="text-sm font-bold text-gray-900">{{ cartStore.subtotal() }} Lei</p>
+    </div>
+
+    <a routerLink="/cart" class="min-h-11 flex items-center justify-center bg-violet-600 hover:bg-violet-700 active:scale-95 text-white text-sm font-medium rounded-md transition-all">
+      Vezi cosul
+    </a>
+  } @else {
+    <p class="text-sm text-gray-500 text-center py-4">Cosul tau este gol.</p>
+  }
+</div>
