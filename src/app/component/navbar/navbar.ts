@@ -1,13 +1,13 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ProductCatalog } from '../../service/product-catalog';
 import { CategoryMenuPanel } from '../category-menu-panel/category-menu-panel';
 import { Context } from '../../service/context';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CategoryMenuPanel, RouterLink],
+  imports: [CategoryMenuPanel, RouterLink, RouterLinkActive],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
