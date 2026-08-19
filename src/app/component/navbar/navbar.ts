@@ -52,6 +52,14 @@ export class Navbar {
 
   protected readonly categoriesMenuOpen = computed(() => !this.menuTargetSelected() || this.hovered());
 
+  // "Acasa" returns to the last category browsed, if any, rather than always
+  // resetting to the empty catalog view — matters on mobile, where cart/promotions
+  // have no sidebar to re-select a category from.
+  protected readonly homeLink = computed(() => {
+    const path = this.context.lastCategoryPath();
+    return path ? ['/products', ...getCategoryPathSlugs(path.group, path.category, path.subGroup)] : ['/'];
+  });
+
   protected onMenuEnter(): void {
     clearTimeout(this.closeTimeoutId);
     this.hovered.set(true);

@@ -1,4 +1,4 @@
-import { Injectable, Signal, computed, inject } from '@angular/core';
+import { Injectable, Signal, computed, effect, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, forkJoin, map, of, startWith, switchMap } from 'rxjs';
@@ -67,6 +67,22 @@ export class Context {
     readonly selectedCategorySignal: Signal<ProductCategory | null> = computed(() => {
         return this.selectedCategoryPath()?.category ?? null;
     });
+
+    // Sticky, unlike selectedCategoryPath: keeps the last real category the user
+    // browsed even after navigating somewhere with no category of its own (cart,
+    // promotions, ...), so "home" can return them to where they were instead of an
+    // empty catalog view.
+    private readonly _lastCategoryPath = signal<CategoryPath | null>(null);
+    readonly lastCategoryPath: Signal<CategoryPath | null> = this._lastCategoryPath.asReadonly();
+
+    constructor() {
+        effect(() => {
+            const path = this.selectedCategoryPath();
+            if (path) {
+                this._lastCategoryPath.set(path);
+            }
+        });
+    }
 
     readonly selectedCategoryProducts: Signal<Product[]> = toSignal(
         toObservable(this.selectedCategorySignal).pipe(
