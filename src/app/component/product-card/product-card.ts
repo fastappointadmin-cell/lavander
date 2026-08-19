@@ -36,7 +36,9 @@ export class ProductCard {
     if (!slugs) {
       return;
     }
-    this.router.navigate(['/products', ...slugs, 'product', this.variant().product.id, 'variant', this.variant().id]);
+    this.router.navigate(['/products', ...slugs, 'product', this.variant().product.id, 'variant', this.variant().id], {
+      queryParamsHandling: 'preserve',
+    });
   }
 
   protected onAddToCart(): void {

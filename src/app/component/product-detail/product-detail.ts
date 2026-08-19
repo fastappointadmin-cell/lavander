@@ -66,7 +66,9 @@ export class ProductDetail {
     }
 
     const slugs = getCategoryPathSlugs(path.group, path.category, path.subGroup);
-    this.router.navigate(['/products', ...slugs, 'product', productId, 'variant', match.id]);
+    this.router.navigate(['/products', ...slugs, 'product', productId, 'variant', match.id], {
+      queryParamsHandling: 'preserve',
+    });
   }
 
   protected onCategoryBreadcrumbClick(): void {
@@ -75,7 +77,7 @@ export class ProductDetail {
       return;
     }
     const slugs = getCategoryPathSlugs(path.group, path.category, path.subGroup);
-    this.router.navigate(['/products', ...slugs]);
+    this.router.navigate(['/products', ...slugs], { queryParamsHandling: 'preserve' });
   }
 
   protected onStarPick(rating: number): void {

@@ -68,18 +68,18 @@ export class Context {
         return this.selectedCategoryPath()?.category ?? null;
     });
 
-    // Sticky, unlike selectedCategoryPath: keeps the last real category the user
-    // browsed even after navigating somewhere with no category of its own (cart,
-    // promotions, ...), so "home" can return them to where they were instead of an
-    // empty catalog view.
-    private readonly _lastCategoryPath = signal<CategoryPath | null>(null);
-    readonly lastCategoryPath: Signal<CategoryPath | null> = this._lastCategoryPath.asReadonly();
+    // Sticky, unlike routeSegments: keeps the last /products/** route the user was on
+    // (category list, or a specific product/variant) even after navigating somewhere
+    // with no route of its own (cart, promotions, ...), so "home" can return them to
+    // exactly where they were instead of dropping back to the bare category list.
+    private readonly _lastProductsPath = signal<string[] | null>(null);
+    readonly lastProductsPath: Signal<string[] | null> = this._lastProductsPath.asReadonly();
 
     constructor() {
         effect(() => {
-            const path = this.selectedCategoryPath();
-            if (path) {
-                this._lastCategoryPath.set(path);
+            const segments = this.routeSegments();
+            if (segments.length > 0) {
+                this._lastProductsPath.set(segments);
             }
         });
     }
