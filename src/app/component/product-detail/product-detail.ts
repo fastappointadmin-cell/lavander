@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { Context } from '../../service/context';
 import { ProductCatalog } from '../../service/product-catalog';
 import { CartStore } from '../../service/cart-store';
+import { Auth } from '../../service/auth';
+import { Favorites } from '../../service/favorites';
 import { ProductVariant } from '../../models/models';
 import { getCategoryPathSlugs } from '../../utils/category-path.util';
 import {
@@ -23,6 +25,8 @@ export class ProductDetail {
   private readonly router = inject(Router);
   private readonly productCatalog = inject(ProductCatalog);
   private readonly cartStore = inject(CartStore);
+  private readonly auth = inject(Auth);
+  protected readonly favorites = inject(Favorites);
 
   protected readonly starIndices = [1, 2, 3, 4, 5];
 
@@ -111,5 +115,17 @@ export class ProductDetail {
       return;
     }
     this.cartStore.addItem(variant.id, 1);
+  }
+
+  protected onFavoriteClick(): void {
+    const variant = this.variant();
+    if (!variant) {
+      return;
+    }
+    if (!this.auth.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.favorites.toggle(variant.id);
   }
 }

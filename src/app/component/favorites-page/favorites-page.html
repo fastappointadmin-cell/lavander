@@ -1,0 +1,13 @@
+<div class="min-w-0 border border-gray-200 rounded-xl bg-white p-4 md:p-6">
+  <p class="text-sm font-semibold text-gray-900 pb-4 mb-4 border-b border-gray-200">Produse favorite</p>
+
+  @if (favorites.variants().length > 0) {
+    <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+      @for (variant of favorites.variants(); track variant.id) {
+        <app-product-card [variant]="variant" />
+      }
+    </div>
+  } @else {
+    <p class="text-sm text-gray-500">Nu ai adaugat inca niciun produs la favorite.</p>
+  }
+</div>

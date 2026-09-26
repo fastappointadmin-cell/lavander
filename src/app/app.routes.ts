@@ -58,6 +58,12 @@ export const routes: Routes = [
         canActivate: [authGuard],
     },
     {
+        path: 'favorites',
+        component: Layout,
+        title: 'Lavander - Produse favorite',
+        canActivate: [authGuard],
+    },
+    {
         path: '',
         component: Layout,
         title: 'Lavander',

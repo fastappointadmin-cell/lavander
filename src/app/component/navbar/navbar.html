@@ -171,11 +171,15 @@
                </svg>
            </a>
 
-           <button aria-label="favorites" type="button" class="hidden md:inline-flex p-2 rounded-full hover:bg-gray-50 active:scale-95 transition-all text-gray-700">
+           <a
+               [routerLink]="auth.isAuthenticated() ? '/favorites' : '/login'"
+               aria-label="favorites"
+               class="hidden md:inline-flex p-2 rounded-full hover:bg-gray-50 active:scale-95 transition-all text-gray-700"
+           >
                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/>
                </svg>
-           </button>
+           </a>
 
            <div class="relative hidden md:block">
                <button

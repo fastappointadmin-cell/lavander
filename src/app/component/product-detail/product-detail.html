@@ -80,18 +80,40 @@
           </div>
         }
 
-        <button
-          type="button"
-          (click)="onAddToCart()"
-          class="min-h-11 flex items-center justify-start pl-6 gap-2 bg-violet-600 hover:bg-violet-700 active:scale-95 text-white text-sm font-medium rounded-md transition-all"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="9" cy="21" r="1"/>
-            <circle cx="20" cy="21" r="1"/>
-            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-          </svg>
-          Adauga in Cos
-        </button>
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            (click)="onAddToCart()"
+            class="min-h-11 flex-1 flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 active:scale-95 text-white text-sm font-medium rounded-md transition-all"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            Adauga in Cos
+          </button>
+
+          <button
+            type="button"
+            (click)="onFavoriteClick()"
+            [attr.aria-label]="favorites.isFavorite(v.id) ? 'remove-favorite' : 'add-favorite'"
+            class="min-h-11 min-w-11 flex items-center justify-center rounded-md border border-gray-300 hover:bg-gray-50 active:scale-95 transition-all"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              [attr.fill]="favorites.isFavorite(v.id) ? '#dc2626' : 'none'"
+              [attr.stroke]="favorites.isFavorite(v.id) ? '#dc2626' : '#6b7280'"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
       @if (v.variantProperties.length > 0) {

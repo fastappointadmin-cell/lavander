@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { ProductVariant } from '../../models/models';
 import { Context } from '../../service/context';
 import { CartStore } from '../../service/cart-store';
+import { Auth } from '../../service/auth';
+import { Favorites } from '../../service/favorites';
 import { findCategoryPathByCategoryId, getCategoryPathSlugs } from '../../utils/category-path.util';
 
 @Component({
@@ -27,6 +29,8 @@ export class ProductCard {
   private readonly context = inject(Context);
   private readonly router = inject(Router);
   private readonly cartStore = inject(CartStore);
+  private readonly auth = inject(Auth);
+  protected readonly favorites = inject(Favorites);
 
   protected onCardClick(): void {
     const path = this.context.selectedCategoryPath();
@@ -43,6 +47,14 @@ export class ProductCard {
 
   protected onAddToCart(): void {
     this.cartStore.addItem(this.variant().id, 1);
+  }
+
+  protected onFavoriteClick(): void {
+    if (!this.auth.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    this.favorites.toggle(this.variant().id);
   }
 
   private resolveSlugsFromVariantCategory(): string[] | null {

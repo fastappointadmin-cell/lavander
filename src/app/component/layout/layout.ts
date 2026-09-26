@@ -12,12 +12,13 @@ import { LoginPage } from "../login-page/login-page";
 import { RegisterPage } from "../register-page/register-page";
 import { AccountPage } from "../account-page/account-page";
 import { OrdersPage } from "../orders-page/orders-page";
+import { FavoritesPage } from "../favorites-page/favorites-page";
 import { Sidebar } from "../sidebar/sidebar";
 import { Context } from '../../service/context';
 
 @Component({
   selector: 'app-layout',
-  imports: [Navbar, ProductPage, ProductDetail, PromotionPage, CartPage, CheckoutPage, LoginPage, RegisterPage, AccountPage, OrdersPage, Sidebar],
+  imports: [Navbar, ProductPage, ProductDetail, PromotionPage, CartPage, CheckoutPage, LoginPage, RegisterPage, AccountPage, OrdersPage, FavoritesPage, Sidebar],
   templateUrl: './layout.html',
   styleUrl: './layout.scss',
 })
@@ -57,5 +58,7 @@ export class Layout {
   isAccountSelected: Signal<boolean> = computed(() => this.currentUrl() === '/account');
 
   isOrdersSelected: Signal<boolean> = computed(() => this.currentUrl() === '/orders');
+
+  isFavoritesSelected: Signal<boolean> = computed(() => this.currentUrl() === '/favorites');
 
 }
