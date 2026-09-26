@@ -1,7 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { filter, map } from 'rxjs';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ProductCatalog } from '../../service/product-catalog';
 import { CartStore } from '../../service/cart-store';
 import { CategoryMenuPanel } from '../category-menu-panel/category-menu-panel';
@@ -31,26 +30,10 @@ export class Navbar {
   });
 
   private readonly hovered = signal(false);
-
-  private readonly isCartOrCheckoutRoute = toSignal(
-    this.router.events.pipe(
-      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-      map(() => this.router.url === '/cart' || this.router.url === '/checkout'),
-    ),
-    { initialValue: this.router.url === '/cart' || this.router.url === '/checkout' },
-  );
-
-  // A category, a promotion, or the cart/checkout route counts as "something selected"
-  // — any of these should let the menu default to closed, not just category selection.
-  private readonly menuTargetSelected = computed(
-    () =>
-      this.context.selectedCategorySignal() !== null ||
-      this.context.selectedPromotionGroup() !== null ||
-      this.isCartOrCheckoutRoute(),
-  );
   private closeTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
-  protected readonly categoriesMenuOpen = computed(() => !this.menuTargetSelected() || this.hovered());
+  // Purely hover/click-driven — never defaults open on its own, regardless of route.
+  protected readonly categoriesMenuOpen = computed(() => this.hovered());
 
   // "Acasa" returns to the last /products/** view the user was on — a specific
   // product if they were viewing one, otherwise the category list — rather than
