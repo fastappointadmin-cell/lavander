@@ -1,0 +1,30 @@
+<div class="min-w-0 border border-gray-200 rounded-xl bg-white p-6 max-w-sm mx-auto">
+  <h1 class="text-lg font-semibold text-gray-900 mb-4">Autentificare</h1>
+
+  @if (errorMessage()) {
+    <div class="mb-4 px-4 py-2 rounded-md bg-red-50 text-red-700 text-sm">{{ errorMessage() }}</div>
+  }
+
+  <form (ngSubmit)="onSubmit()" class="flex flex-col gap-3">
+    <label class="flex flex-col gap-1 text-sm text-gray-700">
+      Email
+      <input type="email" [(ngModel)]="email" name="email" required class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
+    </label>
+    <label class="flex flex-col gap-1 text-sm text-gray-700">
+      Parola
+      <input type="password" [(ngModel)]="password" name="password" required class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
+    </label>
+
+    <button
+      type="submit"
+      [disabled]="submitting()"
+      class="mt-2 min-h-11 bg-violet-600 hover:bg-violet-700 active:scale-95 transition-all rounded-md text-sm font-medium text-white disabled:opacity-50"
+    >
+      {{ submitting() ? 'Se autentifica...' : 'Autentificare' }}
+    </button>
+  </form>
+
+  <p class="text-sm text-gray-500 mt-4">
+    Nu ai cont? <a routerLink="/register" class="text-violet-600 hover:underline">Inregistreaza-te</a>
+  </p>
+</div>

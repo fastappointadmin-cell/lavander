@@ -6,6 +6,12 @@
       <app-cart-page class="flex-1 min-w-0"></app-cart-page>
     } @else if (isCheckoutSelected()) {
       <app-checkout-page class="flex-1 min-w-0"></app-checkout-page>
+    } @else if (isLoginSelected()) {
+      <app-login-page class="flex-1 min-w-0"></app-login-page>
+    } @else if (isRegisterSelected()) {
+      <app-register-page class="flex-1 min-w-0"></app-register-page>
+    } @else if (isAccountSelected()) {
+      <app-account-page class="flex-1 min-w-0"></app-account-page>
     } @else if (isProductSelected()) {
       <app-product-detail class="flex-1 min-w-0"></app-product-detail>
     } @else if (isPromotionSelected()) {

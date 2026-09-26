@@ -1,0 +1,18 @@
+<div class="min-w-0 border border-gray-200 rounded-xl bg-white p-6 max-w-sm mx-auto">
+  @if (auth.user(); as user) {
+    <h1 class="text-lg font-semibold text-gray-900 mb-1">{{ user.fullName }}</h1>
+    <p class="text-sm text-gray-500 mb-6">{{ user.email }}</p>
+
+    <p class="text-sm text-gray-500 mb-6">
+      Istoricul comenzilor, produsele favorite si setarile contului vor fi disponibile in curand.
+    </p>
+
+    <button
+      type="button"
+      (click)="onLogout()"
+      class="min-h-11 w-full border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 active:scale-95 transition-all"
+    >
+      Delogare
+    </button>
+  }
+</div>

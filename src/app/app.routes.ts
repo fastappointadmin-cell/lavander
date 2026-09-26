@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { Layout } from './component/layout/layout';
 import { AdminPage } from './component/admin/admin-page/admin-page';
+import { adminGuard, authGuard } from './guard/auth.guard';
 
 export const routes: Routes = [
     // A single route for any /products/... depth (group/category or group/subGroup/category)
@@ -32,6 +33,23 @@ export const routes: Routes = [
         path: 'admin',
         component: AdminPage,
         title: 'Lavander Admin',
+        canActivate: [adminGuard],
+    },
+    {
+        path: 'login',
+        component: Layout,
+        title: 'Lavander - Autentificare',
+    },
+    {
+        path: 'register',
+        component: Layout,
+        title: 'Lavander - Creeaza cont',
+    },
+    {
+        path: 'account',
+        component: Layout,
+        title: 'Lavander - Contul meu',
+        canActivate: [authGuard],
     },
     {
         path: '',

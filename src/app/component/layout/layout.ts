@@ -8,12 +8,15 @@ import { ProductDetail } from "../product-detail/product-detail";
 import { PromotionPage } from "../promotion-page/promotion-page";
 import { CartPage } from "../cart-page/cart-page";
 import { CheckoutPage } from "../checkout-page/checkout-page";
+import { LoginPage } from "../login-page/login-page";
+import { RegisterPage } from "../register-page/register-page";
+import { AccountPage } from "../account-page/account-page";
 import { Sidebar } from "../sidebar/sidebar";
 import { Context } from '../../service/context';
 
 @Component({
   selector: 'app-layout',
-  imports: [Navbar, ProductPage, ProductDetail, PromotionPage, CartPage, CheckoutPage, Sidebar],
+  imports: [Navbar, ProductPage, ProductDetail, PromotionPage, CartPage, CheckoutPage, LoginPage, RegisterPage, AccountPage, Sidebar],
   templateUrl: './layout.html',
   styleUrl: './layout.scss',
 })
@@ -45,5 +48,11 @@ export class Layout {
   isCartSelected: Signal<boolean> = computed(() => this.currentUrl() === '/cart');
 
   isCheckoutSelected: Signal<boolean> = computed(() => this.currentUrl() === '/checkout');
+
+  isLoginSelected: Signal<boolean> = computed(() => this.currentUrl() === '/login');
+
+  isRegisterSelected: Signal<boolean> = computed(() => this.currentUrl() === '/register');
+
+  isAccountSelected: Signal<boolean> = computed(() => this.currentUrl() === '/account');
 
 }

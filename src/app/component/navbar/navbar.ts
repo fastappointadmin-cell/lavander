@@ -6,6 +6,7 @@ import { CartStore } from '../../service/cart-store';
 import { CategoryMenuPanel } from '../category-menu-panel/category-menu-panel';
 import { CartDropdown } from '../cart-dropdown/cart-dropdown';
 import { Context } from '../../service/context';
+import { Auth } from '../../service/auth';
 import { ProductCategory, ProductCategoryGroup, ProductSubCategoryGroup, PromotionGroup } from '../../models/models';
 import { getCategoryPathSlugs, slugify } from '../../utils/category-path.util';
 
@@ -20,6 +21,7 @@ export class Navbar {
   private readonly context = inject(Context);
   private readonly router = inject(Router);
   protected readonly cartStore = inject(CartStore);
+  protected readonly auth = inject(Auth);
 
   protected readonly categoryGroups = toSignal(this.productCatalog.getCategoryGroups(), {
     initialValue: [],

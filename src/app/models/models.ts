@@ -82,6 +82,20 @@ export interface CartItem {
   quantity: number;
 }
 
+export type Role = 'USER' | 'ADMIN';
+
+export interface User {
+  id: number;
+  email: string;
+  fullName: string;
+  role: Role;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: User;
+}
+
 // Only COURIER exists for now; SAMEDAY_LOCKER (or similar) will be added once the
 // Sameday integration is wired up.
 export type DeliveryMethod = 'COURIER';
