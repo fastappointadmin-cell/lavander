@@ -22,6 +22,19 @@ export class RegisterPage {
 
   protected onSubmit(): void {
     this.errorMessage.set(null);
+
+    // Angular's NgForm disables native HTML validation (adds novalidate), so
+    // required/minlength attributes on the inputs are purely decorative — this is
+    // the actual check that stops an invalid submission from reaching the backend.
+    if (!this.fullName.trim() || !this.email.trim() || !this.password) {
+      this.errorMessage.set('Completeaza toate campurile.');
+      return;
+    }
+    if (this.password.length < 8) {
+      this.errorMessage.set('Parola trebuie sa aiba cel putin 8 caractere.');
+      return;
+    }
+
     this.submitting.set(true);
     this.auth.register({ email: this.email, password: this.password, fullName: this.fullName }).subscribe({
       next: () => {
