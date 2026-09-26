@@ -34,6 +34,13 @@
       <p class="text-sm text-gray-500">Subtotal</p>
       <p class="text-lg font-bold text-gray-900">{{ cartStore.subtotal() }} Lei</p>
     </div>
+
+    <a
+      routerLink="/checkout"
+      class="mt-4 min-h-11 flex items-center justify-center bg-violet-600 hover:bg-violet-700 active:scale-95 transition-all rounded-md text-sm font-medium text-white"
+    >
+      Finalizeaza comanda
+    </a>
   } @else {
     <p class="text-sm text-gray-500">Cosul tau este gol.</p>
   }

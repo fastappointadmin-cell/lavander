@@ -4,6 +4,8 @@
   <div class="flex items-start gap-4">
     @if (isCartSelected()) {
       <app-cart-page class="flex-1 min-w-0"></app-cart-page>
+    } @else if (isCheckoutSelected()) {
+      <app-checkout-page class="flex-1 min-w-0"></app-checkout-page>
     } @else if (isProductSelected()) {
       <app-product-detail class="flex-1 min-w-0"></app-product-detail>
     } @else if (isPromotionSelected()) {

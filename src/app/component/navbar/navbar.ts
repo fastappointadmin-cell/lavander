@@ -32,21 +32,21 @@ export class Navbar {
 
   private readonly hovered = signal(false);
 
-  private readonly isCartRoute = toSignal(
+  private readonly isCartOrCheckoutRoute = toSignal(
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-      map(() => this.router.url === '/cart'),
+      map(() => this.router.url === '/cart' || this.router.url === '/checkout'),
     ),
-    { initialValue: this.router.url === '/cart' },
+    { initialValue: this.router.url === '/cart' || this.router.url === '/checkout' },
   );
 
-  // A category, a promotion, or the cart route counts as "something selected" — any of
-  // these should let the menu default to closed, not just category selection.
+  // A category, a promotion, or the cart/checkout route counts as "something selected"
+  // — any of these should let the menu default to closed, not just category selection.
   private readonly menuTargetSelected = computed(
     () =>
       this.context.selectedCategorySignal() !== null ||
       this.context.selectedPromotionGroup() !== null ||
-      this.isCartRoute(),
+      this.isCartOrCheckoutRoute(),
   );
   private closeTimeoutId: ReturnType<typeof setTimeout> | undefined;
 

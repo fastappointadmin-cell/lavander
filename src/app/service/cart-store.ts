@@ -33,27 +33,27 @@ export class CartStore {
 
   loadCart(): void {
     this.http
-      .get<Cart>(`${this.baseUrl}/api/cart`, { headers: this.headers() })
+      .get<Cart>(`${this.baseUrl}/api/cart`, { headers: this.cartTokenHeaders() })
       .subscribe((cart) => this.setCart(cart));
   }
 
   addItem(variantId: number, quantity: number): void {
     const request: AddCartItemRequest = { variantId, quantity };
     this.http
-      .post<Cart>(`${this.baseUrl}/api/cart/items`, request, { headers: this.headers() })
+      .post<Cart>(`${this.baseUrl}/api/cart/items`, request, { headers: this.cartTokenHeaders() })
       .subscribe((cart) => this.setCart(cart));
   }
 
   updateItemQuantity(itemId: number, quantity: number): void {
     const request: UpdateCartItemRequest = { quantity };
     this.http
-      .put<Cart>(`${this.baseUrl}/api/cart/items/${itemId}`, request, { headers: this.headers() })
+      .put<Cart>(`${this.baseUrl}/api/cart/items/${itemId}`, request, { headers: this.cartTokenHeaders() })
       .subscribe((cart) => this.setCart(cart));
   }
 
   removeItem(itemId: number): void {
     this.http
-      .delete<Cart>(`${this.baseUrl}/api/cart/items/${itemId}`, { headers: this.headers() })
+      .delete<Cart>(`${this.baseUrl}/api/cart/items/${itemId}`, { headers: this.cartTokenHeaders() })
       .subscribe((cart) => this.setCart(cart));
   }
 
@@ -73,7 +73,8 @@ export class CartStore {
     }
   }
 
-  private headers(): HttpHeaders {
+  /** Shared with other services (e.g. checkout) that need to identify the same cart. */
+  cartTokenHeaders(): HttpHeaders {
     const token = this.isBrowser ? localStorage.getItem(CART_TOKEN_STORAGE_KEY) : null;
     return token ? new HttpHeaders({ 'X-Cart-Token': token }) : new HttpHeaders();
   }

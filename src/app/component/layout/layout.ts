@@ -7,12 +7,13 @@ import { ProductPage } from "../product-page/product-page";
 import { ProductDetail } from "../product-detail/product-detail";
 import { PromotionPage } from "../promotion-page/promotion-page";
 import { CartPage } from "../cart-page/cart-page";
+import { CheckoutPage } from "../checkout-page/checkout-page";
 import { Sidebar } from "../sidebar/sidebar";
 import { Context } from '../../service/context';
 
 @Component({
   selector: 'app-layout',
-  imports: [Navbar, ProductPage, ProductDetail, PromotionPage, CartPage, Sidebar],
+  imports: [Navbar, ProductPage, ProductDetail, PromotionPage, CartPage, CheckoutPage, Sidebar],
   templateUrl: './layout.html',
   styleUrl: './layout.scss',
 })
@@ -33,12 +34,16 @@ export class Layout {
     return this.context.selectedPromotionGroup() !== null;
   });
 
-  isCartSelected: Signal<boolean> = toSignal(
+  private readonly currentUrl: Signal<string> = toSignal(
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-      map(() => this.router.url === '/cart'),
+      map(() => this.router.url),
     ),
-    { initialValue: this.router.url === '/cart' },
+    { initialValue: this.router.url },
   );
+
+  isCartSelected: Signal<boolean> = computed(() => this.currentUrl() === '/cart');
+
+  isCheckoutSelected: Signal<boolean> = computed(() => this.currentUrl() === '/checkout');
 
 }

@@ -81,3 +81,40 @@ export interface CartItem {
   variant: ProductVariant;
   quantity: number;
 }
+
+// Only COURIER exists for now; SAMEDAY_LOCKER (or similar) will be added once the
+// Sameday integration is wired up.
+export type DeliveryMethod = 'COURIER';
+
+export type PaymentMethod = 'CARD' | 'CASH_ON_DELIVERY';
+
+export type OrderStatus = 'PLACED';
+
+export interface OrderItem {
+  id: number;
+  variantId: number;
+  variantName: string;
+  unitPrice: number;
+  quantity: number;
+}
+
+export interface Order {
+  id: number;
+  customerFullName: string;
+  customerPhone: string;
+  customerEmail: string;
+  deliveryMethod: DeliveryMethod;
+  shippingStreet: string;
+  shippingCity: string;
+  shippingCounty: string;
+  shippingPostalCode: string;
+  paymentMethod: PaymentMethod;
+  promoCode: string | null;
+  subtotal: number;
+  shippingCost: number;
+  discountAmount: number;
+  total: number;
+  status: OrderStatus;
+  createdAt: string;
+  items: OrderItem[];
+}

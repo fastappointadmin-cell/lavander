@@ -24,6 +24,11 @@ export const routes: Routes = [
         title: 'Lavander - Cos',
     },
     {
+        path: 'checkout',
+        component: Layout,
+        title: 'Lavander - Checkout',
+    },
+    {
         path: 'admin',
         component: AdminPage,
         title: 'Lavander Admin',

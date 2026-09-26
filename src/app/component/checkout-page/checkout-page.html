@@ -1,0 +1,130 @@
+<div class="min-w-0 border border-gray-200 rounded-xl bg-white p-6">
+  @if (placedOrder(); as order) {
+    <h1 class="text-lg font-semibold text-gray-900 mb-2">Comanda a fost trimisa!</h1>
+    <p class="text-sm text-gray-600">Numarul comenzii: <span class="font-medium text-gray-900">#{{ order.id }}</span></p>
+    <p class="text-sm text-gray-600 mt-1">Total: <span class="font-medium text-gray-900">{{ order.total }} Lei</span></p>
+    <a routerLink="/" class="inline-block mt-6 px-4 py-2 rounded-md bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium">
+      Inapoi la magazin
+    </a>
+  } @else if (cartStore.items().length === 0) {
+    <h1 class="text-lg font-semibold text-gray-900 mb-4">Finalizeaza comanda</h1>
+    <p class="text-sm text-gray-500">Cosul tau este gol.</p>
+    <a routerLink="/" class="inline-block mt-4 text-sm text-violet-600 hover:underline">Inapoi la magazin</a>
+  } @else {
+    <h1 class="text-lg font-semibold text-gray-900 mb-4">Finalizeaza comanda</h1>
+
+    @if (errorMessage()) {
+      <div class="mb-4 px-4 py-2 rounded-md bg-red-50 text-red-700 text-sm">{{ errorMessage() }}</div>
+    }
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <form (ngSubmit)="onSubmit()" class="flex flex-col gap-6 order-2 lg:order-1">
+        <div>
+          <h2 class="text-sm font-semibold text-gray-900 mb-3">Date de contact</h2>
+          <div class="flex flex-col gap-3">
+            <label class="flex flex-col gap-1 text-sm text-gray-700">
+              Nume complet
+              <input [(ngModel)]="customerFullName" name="customerFullName" required class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
+            </label>
+            <label class="flex flex-col gap-1 text-sm text-gray-700">
+              Telefon
+              <input [(ngModel)]="customerPhone" name="customerPhone" required class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
+            </label>
+            <label class="flex flex-col gap-1 text-sm text-gray-700">
+              Email
+              <input type="email" [(ngModel)]="customerEmail" name="customerEmail" required class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-sm font-semibold text-gray-900 mb-3">Livrare prin curier la adresa</h2>
+          <div class="flex flex-col gap-3">
+            <label class="flex flex-col gap-1 text-sm text-gray-700">
+              Strada si numar
+              <input [(ngModel)]="shippingStreet" name="shippingStreet" required class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
+            </label>
+            <div class="grid grid-cols-2 gap-3">
+              <label class="flex flex-col gap-1 text-sm text-gray-700">
+                Oras
+                <input [(ngModel)]="shippingCity" name="shippingCity" required class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
+              </label>
+              <label class="flex flex-col gap-1 text-sm text-gray-700">
+                Judet
+                <input [(ngModel)]="shippingCounty" name="shippingCounty" required class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
+              </label>
+            </div>
+            <label class="flex flex-col gap-1 text-sm text-gray-700">
+              Cod postal
+              <input [(ngModel)]="shippingPostalCode" name="shippingPostalCode" required class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="text-sm font-semibold text-gray-900 mb-3">Metoda de plata</h2>
+          <div class="flex flex-col gap-2">
+            <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+              <input type="radio" [(ngModel)]="paymentMethod" name="paymentMethod" value="CASH_ON_DELIVERY" />
+              Numerar la livrare
+            </label>
+            <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+              <input type="radio" [(ngModel)]="paymentMethod" name="paymentMethod" value="CARD" />
+              Card
+            </label>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          [disabled]="submitting()"
+          class="min-h-11 bg-violet-600 hover:bg-violet-700 active:scale-95 transition-all rounded-md text-sm font-medium text-white disabled:opacity-50"
+        >
+          {{ submitting() ? 'Se trimite...' : 'Trimite comanda' }}
+        </button>
+      </form>
+
+      <div class="order-1 lg:order-2">
+        <h2 class="text-sm font-semibold text-gray-900 mb-3">Sumar comanda</h2>
+        <div class="border border-gray-200 rounded-lg p-4 flex flex-col gap-3">
+          <div class="divide-y divide-gray-100">
+            @for (item of cartStore.items(); track item.id) {
+              <div class="flex items-center justify-between gap-4 py-2 text-sm">
+                <span class="text-gray-700">{{ item.variant.variantName }} &times; {{ item.quantity }}</span>
+                <span class="text-gray-900 font-medium">{{ item.variant.price * item.quantity }} Lei</span>
+              </div>
+            }
+          </div>
+
+          <div class="flex items-end gap-2 pt-3 border-t border-gray-100">
+            <label class="flex-1 flex flex-col gap-1 text-sm text-gray-700">
+              Cod promo
+              <input [(ngModel)]="promoCode" name="promoCode" [ngModelOptions]="{ standalone: true }" class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
+            </label>
+            <button type="button" (click)="onApplyPromoCode()" class="px-3 py-2 rounded-md border border-gray-300 text-sm text-gray-700 hover:bg-gray-50">
+              Aplica
+            </button>
+          </div>
+          @if (promoCodeNote()) {
+            <p class="text-xs text-gray-500">{{ promoCodeNote() }}</p>
+          }
+
+          <div class="flex flex-col gap-1.5 pt-3 border-t border-gray-100 text-sm">
+            <div class="flex items-center justify-between text-gray-600">
+              <span>Subtotal</span>
+              <span>{{ cartStore.subtotal() }} Lei</span>
+            </div>
+            <div class="flex items-center justify-between text-gray-600">
+              <span>Transport</span>
+              <span>Gratuit</span>
+            </div>
+            <div class="flex items-center justify-between text-base font-semibold text-gray-900 pt-1.5 border-t border-gray-100">
+              <span>Total estimat</span>
+              <span>{{ cartStore.subtotal() }} Lei</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
