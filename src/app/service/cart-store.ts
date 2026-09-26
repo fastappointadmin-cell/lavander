@@ -66,6 +66,19 @@ export class CartStore {
     }
   }
 
+  /**
+   * Forgets the current cart token and starts a fresh anonymous one — used on logout so
+   * a shared/public computer doesn't let the next, different person on the same browser
+   * keep adding items to the previous account's (now-linked) cart.
+   */
+  resetForLogout(): void {
+    if (this.isBrowser) {
+      localStorage.removeItem(CART_TOKEN_STORAGE_KEY);
+    }
+    this.cart.set(null);
+    this.loadCart();
+  }
+
   private setCart(cart: Cart): void {
     this.cart.set(cart);
     if (this.isBrowser) {

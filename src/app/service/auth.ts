@@ -5,6 +5,7 @@ import { Observable, tap } from 'rxjs';
 import { AuthResponse, User } from '../models/models';
 import { LoginRequest, RegisterRequest } from '../models/auth-requests';
 import { environment } from '../../env/env';
+import { CartStore } from './cart-store';
 
 const AUTH_TOKEN_STORAGE_KEY = 'auth_token';
 
@@ -13,6 +14,7 @@ export class Auth {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.backendUrl;
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+  private readonly cartStore = inject(CartStore);
 
   private readonly currentUser = signal<User | null>(null);
   readonly user = this.currentUser.asReadonly();
@@ -58,6 +60,9 @@ export class Auth {
 
   logout(): void {
     this.clearSession();
+    // Also drops the cart token — without a valid JWT it would keep resolving to
+    // the just-logged-out account's (now-linked) cart on this same browser.
+    this.cartStore.resetForLogout();
   }
 
   private storeSession(response: AuthResponse): void {
@@ -65,6 +70,9 @@ export class Auth {
     if (this.isBrowser) {
       localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, response.token);
     }
+    // Login/register may have just claimed or merged an anonymous cart server-side —
+    // refetch so the UI reflects that immediately instead of after the next reload.
+    this.cartStore.loadCart();
   }
 
   private clearSession(): void {
