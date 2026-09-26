@@ -16,4 +16,8 @@ export class Checkout {
       headers: this.cartStore.cartTokenHeaders(),
     });
   }
+
+  getMyOrders() {
+    return this.http.get<Order[]>(`${this.baseUrl}/api/orders`);
+  }
 }

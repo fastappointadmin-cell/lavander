@@ -52,6 +52,12 @@ export const routes: Routes = [
         canActivate: [authGuard],
     },
     {
+        path: 'orders',
+        component: Layout,
+        title: 'Lavander - Comenzile mele',
+        canActivate: [authGuard],
+    },
+    {
         path: '',
         component: Layout,
         title: 'Lavander',

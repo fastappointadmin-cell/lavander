@@ -12,6 +12,8 @@
       <app-register-page class="flex-1 min-w-0"></app-register-page>
     } @else if (isAccountSelected()) {
       <app-account-page class="flex-1 min-w-0"></app-account-page>
+    } @else if (isOrdersSelected()) {
+      <app-orders-page class="flex-1 min-w-0"></app-orders-page>
     } @else if (isProductSelected()) {
       <app-product-detail class="flex-1 min-w-0"></app-product-detail>
     } @else if (isPromotionSelected()) {
