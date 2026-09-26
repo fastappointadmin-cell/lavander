@@ -1,4 +1,4 @@
-<div class="min-w-0 border border-gray-200 rounded-xl bg-white p-6 max-w-sm mx-auto">
+<div class="min-w-0 border border-gray-200 rounded-xl bg-white p-6 max-w-md mx-auto">
   @if (auth.user(); as user) {
     <h1 class="text-lg font-semibold text-gray-900 mb-1">{{ user.fullName }}</h1>
     <p class="text-sm text-gray-500 mb-6">{{ user.email }}</p>
@@ -15,7 +15,7 @@
 
     <a
       routerLink="/favorites"
-      class="min-h-11 w-full flex items-center justify-between px-4 border border-gray-200 rounded-md text-sm text-gray-700 hover:bg-gray-50 active:scale-95 transition-all mb-3"
+      class="min-h-11 w-full flex items-center justify-between px-4 border border-gray-200 rounded-md text-sm text-gray-700 hover:bg-gray-50 active:scale-95 transition-all mb-6"
     >
       Produse favorite
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -23,9 +23,59 @@
       </svg>
     </a>
 
-    <p class="text-sm text-gray-500 mb-6">
-      Setarile contului vor fi disponibile in curand.
-    </p>
+    <div class="border-t border-gray-100 pt-6 mb-6">
+      <p class="text-sm font-semibold text-gray-900 mb-3">Date cont</p>
+
+      @if (profileError()) {
+        <div class="mb-3 px-4 py-2 rounded-md bg-red-50 text-red-700 text-sm">{{ profileError() }}</div>
+      }
+      @if (profileMessage()) {
+        <div class="mb-3 px-4 py-2 rounded-md bg-green-50 text-green-700 text-sm">{{ profileMessage() }}</div>
+      }
+
+      <form (ngSubmit)="onSaveProfile()" class="flex flex-col gap-3">
+        <label class="flex flex-col gap-1 text-sm text-gray-700">
+          Nume complet
+          <input [(ngModel)]="fullName" name="fullName" required class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
+        </label>
+        <button
+          type="submit"
+          [disabled]="profileSubmitting()"
+          class="min-h-11 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 active:scale-95 transition-all disabled:opacity-50"
+        >
+          {{ profileSubmitting() ? 'Se salveaza...' : 'Salveaza numele' }}
+        </button>
+      </form>
+    </div>
+
+    <div class="border-t border-gray-100 pt-6 mb-6">
+      <p class="text-sm font-semibold text-gray-900 mb-3">Schimba parola</p>
+
+      @if (passwordError()) {
+        <div class="mb-3 px-4 py-2 rounded-md bg-red-50 text-red-700 text-sm">{{ passwordError() }}</div>
+      }
+      @if (passwordMessage()) {
+        <div class="mb-3 px-4 py-2 rounded-md bg-green-50 text-green-700 text-sm">{{ passwordMessage() }}</div>
+      }
+
+      <form (ngSubmit)="onChangePassword()" class="flex flex-col gap-3">
+        <label class="flex flex-col gap-1 text-sm text-gray-700">
+          Parola curenta
+          <input type="password" [(ngModel)]="currentPassword" name="currentPassword" required class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
+        </label>
+        <label class="flex flex-col gap-1 text-sm text-gray-700">
+          Parola noua
+          <input type="password" [(ngModel)]="newPassword" name="newPassword" required class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
+        </label>
+        <button
+          type="submit"
+          [disabled]="passwordSubmitting()"
+          class="min-h-11 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 active:scale-95 transition-all disabled:opacity-50"
+        >
+          {{ passwordSubmitting() ? 'Se schimba...' : 'Schimba parola' }}
+        </button>
+      </form>
+    </div>
 
     <button
       type="button"

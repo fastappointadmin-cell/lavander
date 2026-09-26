@@ -3,7 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { AuthResponse, User } from '../models/models';
-import { LoginRequest, RegisterRequest } from '../models/auth-requests';
+import { ChangePasswordRequest, LoginRequest, RegisterRequest, UpdateProfileRequest } from '../models/auth-requests';
 import { environment } from '../../env/env';
 import { CartStore } from './cart-store';
 
@@ -56,6 +56,16 @@ export class Auth {
     return this.http
       .post<AuthResponse>(`${this.baseUrl}/api/auth/login`, request)
       .pipe(tap((response) => this.storeSession(response)));
+  }
+
+  updateProfile(request: UpdateProfileRequest): Observable<User> {
+    return this.http
+      .put<User>(`${this.baseUrl}/api/auth/me`, request)
+      .pipe(tap((user) => this.currentUser.set(user)));
+  }
+
+  changePassword(request: ChangePasswordRequest): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/api/auth/password`, request);
   }
 
   logout(): void {
