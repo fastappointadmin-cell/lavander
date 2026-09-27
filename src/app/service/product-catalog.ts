@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import {
+  BucketImage,
   Product,
   ProductCategory,
   ProductCategoryGroup,
@@ -141,6 +142,24 @@ export class ProductCatalog {
 
     deleteVariant(id: number): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}/api/products/variants/${id}`);
+    }
+
+    uploadVariantImage(variantId: number, file: File): Observable<ProductVariant> {
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.http.post<ProductVariant>(`${this.baseUrl}/api/products/variants/${variantId}/images`, formData);
+    }
+
+    deleteVariantImage(variantId: number, imageId: number): Observable<void> {
+        return this.http.delete<void>(`${this.baseUrl}/api/products/variants/${variantId}/images/${imageId}`);
+    }
+
+    browseBucketImages(): Observable<BucketImage[]> {
+        return this.http.get<BucketImage[]>(`${this.baseUrl}/api/products/variants/images/browse`);
+    }
+
+    attachVariantImageFromBucket(variantId: number, thumbnailKey: string): Observable<ProductVariant> {
+        return this.http.post<ProductVariant>(`${this.baseUrl}/api/products/variants/${variantId}/images/from-bucket`, { thumbnailKey });
     }
 
     submitReview(variantId: number, request: ReviewRequest): Observable<ProductVariant> {

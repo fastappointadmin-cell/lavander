@@ -25,6 +25,7 @@ export class AdminCategories implements OnInit {
   protected readonly items = signal<FlattenedCategory[]>([]);
   protected readonly properties = signal<PropertyDefinition[]>([]);
   protected readonly editingId = signal<number | null>(null);
+  protected readonly addFormOpen = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
 
   protected categoryName = '';
@@ -54,7 +55,23 @@ export class AdminCategories implements OnInit {
     }
   }
 
-  protected startEdit(entry: FlattenedCategory): void {
+  protected openAddForm(): void {
+    this.editingId.set(null);
+    this.categoryName = '';
+    this.parentType = 'group';
+    this.parentGroupId = null;
+    this.parentSubGroupId = null;
+    this.selectedPropertyIds = new Set();
+    this.errorMessage.set(null);
+    this.addFormOpen.set(true);
+  }
+
+  protected toggleEdit(entry: FlattenedCategory): void {
+    this.addFormOpen.set(false);
+    if (this.editingId() === entry.category.id) {
+      this.editingId.set(null);
+      return;
+    }
     this.editingId.set(entry.category.id);
     this.categoryName = entry.category.categoryName;
     this.parentType = entry.parentSubGroupId !== undefined ? 'subgroup' : 'group';
@@ -66,6 +83,7 @@ export class AdminCategories implements OnInit {
 
   protected cancel(): void {
     this.editingId.set(null);
+    this.addFormOpen.set(false);
     this.categoryName = '';
     this.parentType = 'group';
     this.parentGroupId = null;

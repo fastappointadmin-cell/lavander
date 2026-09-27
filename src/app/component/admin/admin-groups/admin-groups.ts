@@ -14,6 +14,7 @@ export class AdminGroups implements OnInit {
 
   protected readonly items = signal<ProductCategoryGroup[]>([]);
   protected readonly editingId = signal<number | null>(null);
+  protected readonly addFormOpen = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
 
   protected groupName = '';
@@ -26,7 +27,19 @@ export class AdminGroups implements OnInit {
     this.productCatalog.getCategoryGroups().subscribe((items) => this.items.set(items));
   }
 
-  protected startEdit(item: ProductCategoryGroup): void {
+  protected openAddForm(): void {
+    this.editingId.set(null);
+    this.groupName = '';
+    this.errorMessage.set(null);
+    this.addFormOpen.set(true);
+  }
+
+  protected toggleEdit(item: ProductCategoryGroup): void {
+    this.addFormOpen.set(false);
+    if (this.editingId() === item.id) {
+      this.editingId.set(null);
+      return;
+    }
     this.editingId.set(item.id);
     this.groupName = item.groupName;
     this.errorMessage.set(null);
@@ -34,6 +47,7 @@ export class AdminGroups implements OnInit {
 
   protected cancel(): void {
     this.editingId.set(null);
+    this.addFormOpen.set(false);
     this.groupName = '';
     this.errorMessage.set(null);
   }

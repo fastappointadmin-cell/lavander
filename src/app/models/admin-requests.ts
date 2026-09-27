@@ -45,6 +45,8 @@ export interface TagRequest {
 
 export interface PromotionGroupRequest {
   groupName: string;
+  description: string;
+  featured: boolean;
   tagIds: number[];
 }
 

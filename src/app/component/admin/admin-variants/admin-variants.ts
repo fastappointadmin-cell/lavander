@@ -1,7 +1,7 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ProductCatalog } from '../../../service/product-catalog';
-import { Product, ProductVariant, PropertyDefinition, Tag } from '../../../models/models';
+import { BucketImage, Product, ProductVariant, PropertyDefinition, Tag } from '../../../models/models';
 import { PropertyValueInput } from '../../../models/admin-requests';
 import { flattenCategories } from '../../../utils/admin-category-tree.util';
 
@@ -24,7 +24,62 @@ export class AdminVariants implements OnInit {
   protected readonly properties = signal<PropertyDefinition[]>([]);
   protected readonly tags = signal<Tag[]>([]);
   protected readonly editingId = signal<number | null>(null);
+  protected readonly addFormOpen = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  protected readonly uploadingImage = signal(false);
+
+  protected readonly editingVariant = computed(
+    () => this.items().find((item) => item.id === this.editingId()) ?? null,
+  );
+
+  protected readonly searchQuery = signal('');
+  protected readonly expandedProductIds = signal<Set<number>>(new Set());
+
+  protected readonly groupedVariants = computed(() => {
+    const query = this.searchQuery().trim().toLowerCase();
+    const productsById = new Map(this.products().map((product) => [product.id, product]));
+    const groups = new Map<number, { product: Product; variants: ProductVariant[] }>();
+
+    for (const variant of this.items()) {
+      const product = productsById.get(variant.product.id);
+      if (!product) {
+        continue;
+      }
+      const matchesProduct = product.productName.toLowerCase().includes(query);
+      const matchesVariant = variant.variantName.toLowerCase().includes(query);
+      if (query && !matchesProduct && !matchesVariant) {
+        continue;
+      }
+      if (!groups.has(product.id)) {
+        groups.set(product.id, { product, variants: [] });
+      }
+      groups.get(product.id)!.variants.push(variant);
+    }
+
+    return Array.from(groups.values()).sort((a, b) => a.product.productName.localeCompare(b.product.productName));
+  });
+
+  // While searching, every matching group stays expanded regardless of the
+  // manually toggled state, so results are never hidden behind a collapsed header.
+  protected isGroupExpanded(productId: number): boolean {
+    return this.searchQuery().trim().length > 0 || this.expandedProductIds().has(productId);
+  }
+
+  protected toggleProductGroup(productId: number): void {
+    this.expandedProductIds.update((current) => {
+      const next = new Set(current);
+      if (next.has(productId)) {
+        next.delete(productId);
+      } else {
+        next.add(productId);
+      }
+      return next;
+    });
+  }
+
+  private expandProductGroup(productId: number): void {
+    this.expandedProductIds.update((current) => new Set(current).add(productId));
+  }
 
   protected variantName = '';
   protected variantDescription = '';
@@ -109,7 +164,24 @@ export class AdminVariants implements OnInit {
     this.propertyRows = this.buildPropertyRowsForProduct(value, this.propertyRows);
   }
 
-  protected startEdit(item: ProductVariant): void {
+  protected openAddForm(): void {
+    this.editingId.set(null);
+    this.variantName = '';
+    this.variantDescription = '';
+    this.productId = null;
+    this.price = null;
+    this.propertyRows = [];
+    this.selectedTagIds = new Set();
+    this.errorMessage.set(null);
+    this.addFormOpen.set(true);
+  }
+
+  protected toggleEdit(item: ProductVariant): void {
+    this.addFormOpen.set(false);
+    if (this.editingId() === item.id) {
+      this.editingId.set(null);
+      return;
+    }
     this.editingId.set(item.id);
     this.variantName = item.variantName;
     this.variantDescription = item.variantDescription;
@@ -122,9 +194,10 @@ export class AdminVariants implements OnInit {
     this.propertyRows = this.buildPropertyRowsForProduct(item.product.id, rows);
     this.selectedTagIds = new Set(item.tags.map((t) => t.id));
     this.errorMessage.set(null);
+    this.expandProductGroup(item.product.id);
   }
 
-  /** Pre-fills the create form from an existing variant, ready to tweak and save as a new one. */
+  /** Pre-fills the add form from an existing variant, ready to tweak and save as a new one. */
   protected copyFrom(item: ProductVariant): void {
     this.editingId.set(null);
     this.variantName = item.variantName;
@@ -138,10 +211,12 @@ export class AdminVariants implements OnInit {
     this.propertyRows = this.buildPropertyRowsForProduct(item.product.id, rows);
     this.selectedTagIds = new Set(item.tags.map((t) => t.id));
     this.errorMessage.set(null);
+    this.addFormOpen.set(true);
   }
 
   protected cancel(): void {
     this.editingId.set(null);
+    this.addFormOpen.set(false);
     this.variantName = '';
     this.variantDescription = '';
     this.productId = null;
@@ -177,10 +252,143 @@ export class AdminVariants implements OnInit {
 
     result$.subscribe({
       next: () => {
+        this.expandProductGroup(this.productId as number);
         this.cancel();
         this.load();
       },
       error: (err) => this.errorMessage.set(err.error?.message ?? 'Something went wrong'),
+    });
+  }
+
+  protected readonly isDragOver = signal(false);
+
+  protected onImageFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      this.uploadFiles(input.files);
+    }
+    input.value = '';
+  }
+
+  protected onImageDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver.set(true);
+  }
+
+  protected onImageDragLeave(): void {
+    this.isDragOver.set(false);
+  }
+
+  protected onImageDrop(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragOver.set(false);
+    if (event.dataTransfer?.files) {
+      this.uploadFiles(event.dataTransfer.files);
+    }
+  }
+
+  private uploadFiles(fileList: FileList): void {
+    const variantId = this.editingId();
+    const files = Array.from(fileList).filter((file) => file.type.startsWith('image/'));
+    if (variantId === null || files.length === 0) {
+      return;
+    }
+    this.errorMessage.set(null);
+    this.uploadingImage.set(true);
+    this.uploadNext(variantId, files, 0);
+  }
+
+  // Uploaded one at a time (not in parallel) so each image's displayOrder,
+  // computed server-side from the current image count, doesn't race.
+  private uploadNext(variantId: number, files: File[], index: number): void {
+    if (index >= files.length) {
+      this.uploadingImage.set(false);
+      this.load();
+      return;
+    }
+    this.productCatalog.uploadVariantImage(variantId, files[index]).subscribe({
+      next: () => this.uploadNext(variantId, files, index + 1),
+      error: (err) => {
+        this.uploadingImage.set(false);
+        this.errorMessage.set(err.error?.message ?? 'Image upload failed');
+        this.load();
+      },
+    });
+  }
+
+  protected onDeleteImage(variantId: number, imageId: number): void {
+    this.productCatalog.deleteVariantImage(variantId, imageId).subscribe({
+      next: () => this.load(),
+      error: (err) => this.errorMessage.set(err.error?.message ?? 'Something went wrong'),
+    });
+  }
+
+  protected readonly bucketPickerOpen = signal(false);
+  protected readonly bucketImages = signal<BucketImage[]>([]);
+  protected readonly loadingBucketImages = signal(false);
+  protected readonly selectedBucketKeys = signal<Set<string>>(new Set());
+  protected readonly attachingBucketImages = signal(false);
+
+  protected openBucketPicker(): void {
+    this.bucketPickerOpen.set(true);
+    this.selectedBucketKeys.set(new Set());
+    this.loadingBucketImages.set(true);
+    this.productCatalog.browseBucketImages().subscribe({
+      next: (images) => {
+        this.bucketImages.set(images);
+        this.loadingBucketImages.set(false);
+      },
+      error: (err) => {
+        this.loadingBucketImages.set(false);
+        this.errorMessage.set(err.error?.message ?? 'Could not load bucket images');
+      },
+    });
+  }
+
+  protected closeBucketPicker(): void {
+    this.bucketPickerOpen.set(false);
+  }
+
+  protected toggleBucketSelection(image: BucketImage): void {
+    this.selectedBucketKeys.update((current) => {
+      const next = new Set(current);
+      if (next.has(image.thumbnailKey)) {
+        next.delete(image.thumbnailKey);
+      } else {
+        next.add(image.thumbnailKey);
+      }
+      return next;
+    });
+  }
+
+  protected confirmBucketSelection(): void {
+    const variantId = this.editingId();
+    const keys = Array.from(this.selectedBucketKeys());
+    if (variantId === null || keys.length === 0) {
+      return;
+    }
+    this.attachingBucketImages.set(true);
+    this.attachBucketImagesNext(variantId, keys, 0);
+  }
+
+  // Attached one at a time (not in parallel), same reasoning as sequential
+  // file uploads: each image's displayOrder is computed server-side from the
+  // current image count, which would race under concurrent requests.
+  private attachBucketImagesNext(variantId: number, keys: string[], index: number): void {
+    if (index >= keys.length) {
+      this.attachingBucketImages.set(false);
+      this.closeBucketPicker();
+      this.load();
+      return;
+    }
+    this.productCatalog.attachVariantImageFromBucket(variantId, keys[index]).subscribe({
+      next: () => this.attachBucketImagesNext(variantId, keys, index + 1),
+      error: (err) => {
+        this.attachingBucketImages.set(false);
+        this.errorMessage.set(err.error?.message ?? 'Something went wrong');
+        this.closeBucketPicker();
+        this.load();
+      },
     });
   }
 

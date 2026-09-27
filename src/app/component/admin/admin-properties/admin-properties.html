@@ -1,42 +1,48 @@
 <div class="border border-gray-200 rounded-xl bg-white p-6">
-  <h2 class="text-lg font-semibold text-gray-900 mb-4">Properties</h2>
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold text-gray-900">Properties</h2>
+    @if (!addFormOpen()) {
+      <button type="button" (click)="openAddForm()" class="px-3 py-1.5 rounded-md bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium">
+        + Add
+      </button>
+    }
+  </div>
 
   @if (errorMessage()) {
     <div class="mb-4 px-4 py-2 rounded-md bg-red-50 text-red-700 text-sm">{{ errorMessage() }}</div>
   }
 
-  <form (ngSubmit)="submit()" class="flex items-end gap-3 mb-6">
-    <label class="flex flex-col gap-1 text-sm text-gray-700">
-      Property name
-      <input [(ngModel)]="propertyName" name="propertyName" required class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
-    </label>
-    <button type="submit" class="px-4 py-2 rounded-md bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium">
-      {{ editingId() === null ? 'Create' : 'Save' }}
-    </button>
-    @if (editingId() !== null) {
+  @if (addFormOpen()) {
+    <form (ngSubmit)="submit()" class="flex items-end gap-3 mb-4 border border-gray-200 rounded-lg p-4">
+      <label class="flex flex-col gap-1 text-sm text-gray-700">
+        Property name
+        <input [(ngModel)]="propertyName" name="propertyName" required class="admin-field" />
+      </label>
+      <button type="submit" class="px-4 py-2 rounded-md bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium">Create</button>
       <button type="button" (click)="cancel()" class="px-4 py-2 rounded-md border border-gray-300 text-sm text-gray-700">Cancel</button>
-    }
-  </form>
+    </form>
+  }
 
-  <table class="w-full text-sm">
-    <thead>
-      <tr class="text-left text-gray-500 border-b border-gray-200">
-        <th class="py-2">ID</th>
-        <th class="py-2">Name</th>
-        <th class="py-2"></th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (item of items(); track item.id) {
-        <tr class="border-b border-gray-100">
-          <td class="py-2">{{ item.id }}</td>
-          <td class="py-2">{{ item.propertyName }}</td>
-          <td class="py-2 text-right">
-            <button type="button" (click)="startEdit(item)" class="text-violet-600 hover:underline mr-3">Edit</button>
-            <button type="button" (click)="remove(item)" class="text-red-600 hover:underline">Delete</button>
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
+  <div class="border border-gray-200 rounded-lg divide-y divide-gray-100">
+    @for (item of items(); track item.id) {
+      <div>
+        <div (click)="toggleEdit(item)" class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors">
+          <span class="text-sm text-gray-900">{{ item.propertyName }}</span>
+          <button type="button" (click)="$event.stopPropagation(); remove(item)" class="text-red-600 hover:underline text-sm">Delete</button>
+        </div>
+        @if (editingId() === item.id) {
+          <form (ngSubmit)="submit()" class="flex items-end gap-3 px-4 py-3 bg-gray-50 border-t border-gray-100">
+            <label class="flex flex-col gap-1 text-sm text-gray-700">
+              Property name
+              <input [(ngModel)]="propertyName" name="propertyName" required class="admin-field" />
+            </label>
+            <button type="submit" class="px-4 py-2 rounded-md bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium">Save</button>
+            <button type="button" (click)="cancel()" class="px-4 py-2 rounded-md border border-gray-300 text-sm text-gray-700">Cancel</button>
+          </form>
+        }
+      </div>
+    } @empty {
+      <p class="px-4 py-3 text-sm text-gray-500">No properties yet.</p>
+    }
+  </div>
 </div>

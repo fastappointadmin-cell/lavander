@@ -16,6 +16,7 @@ export class AdminSubgroups implements OnInit {
   protected readonly groups = signal<ProductCategoryGroup[]>([]);
   protected readonly items = signal<FlattenedSubGroup[]>([]);
   protected readonly editingId = signal<number | null>(null);
+  protected readonly addFormOpen = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
 
   protected groupName = '';
@@ -36,7 +37,20 @@ export class AdminSubgroups implements OnInit {
     return this.groups().find((g) => g.id === id)?.groupName ?? '';
   }
 
-  protected startEdit(entry: FlattenedSubGroup): void {
+  protected openAddForm(): void {
+    this.editingId.set(null);
+    this.groupName = '';
+    this.parentGroupId = null;
+    this.errorMessage.set(null);
+    this.addFormOpen.set(true);
+  }
+
+  protected toggleEdit(entry: FlattenedSubGroup): void {
+    this.addFormOpen.set(false);
+    if (this.editingId() === entry.subGroup.id) {
+      this.editingId.set(null);
+      return;
+    }
     this.editingId.set(entry.subGroup.id);
     this.groupName = entry.subGroup.groupName;
     this.parentGroupId = entry.parentGroupId;
@@ -45,6 +59,7 @@ export class AdminSubgroups implements OnInit {
 
   protected cancel(): void {
     this.editingId.set(null);
+    this.addFormOpen.set(false);
     this.groupName = '';
     this.parentGroupId = null;
     this.errorMessage.set(null);

@@ -6,3 +6,45 @@ html, body {
     height: 100%;
     background-color: #f9fafb;
 }
+
+// Shared admin form control: normalizes height/appearance/text-position across
+// <input>, <select> and type="number" so mixing them in one row (e.g. a
+// Product select next to Name/Description text inputs) doesn't misalign.
+//
+// Text is centered via line-height alone (no vertical padding) — padding-based
+// centering is what actually causes the mismatch: a native <select>'s internal
+// value box doesn't consume top/bottom padding the same way a plain <input>'s
+// does, so equal-looking padding still leaves their text sitting at different
+// heights. Line-height has no such ambiguity: with box-sizing: border-box and
+// zero vertical padding, "line-height == content-box height" is the one rule
+// that centers a single line of text identically no matter the element.
+.admin-field {
+    @apply border border-gray-300 rounded-md text-sm bg-white appearance-none;
+    box-sizing: border-box;
+    height: 2.25rem; // 36px
+    line-height: 2.125rem; // 34px = height minus the 1px top+bottom border
+    padding: 0 0.75rem;
+    margin: 0;
+}
+
+select.admin-field {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 2rem;
+    background-repeat: no-repeat;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-position: right 0.5rem center;
+    background-size: 1em;
+}
+
+// `appearance-none` alone doesn't remove WebKit's number spinner buttons —
+// they're separate pseudo-elements that need to be hidden explicitly.
+input[type="number"].admin-field::-webkit-inner-spin-button,
+input[type="number"].admin-field::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"].admin-field {
+    -moz-appearance: textfield;
+}

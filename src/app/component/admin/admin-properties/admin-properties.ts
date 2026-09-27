@@ -14,6 +14,7 @@ export class AdminProperties implements OnInit {
 
   protected readonly items = signal<PropertyDefinition[]>([]);
   protected readonly editingId = signal<number | null>(null);
+  protected readonly addFormOpen = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
 
   protected propertyName = '';
@@ -26,7 +27,19 @@ export class AdminProperties implements OnInit {
     this.productCatalog.getPropertyDefinitions().subscribe((items) => this.items.set(items));
   }
 
-  protected startEdit(item: PropertyDefinition): void {
+  protected openAddForm(): void {
+    this.editingId.set(null);
+    this.propertyName = '';
+    this.errorMessage.set(null);
+    this.addFormOpen.set(true);
+  }
+
+  protected toggleEdit(item: PropertyDefinition): void {
+    this.addFormOpen.set(false);
+    if (this.editingId() === item.id) {
+      this.editingId.set(null);
+      return;
+    }
     this.editingId.set(item.id);
     this.propertyName = item.propertyName;
     this.errorMessage.set(null);
@@ -34,6 +47,7 @@ export class AdminProperties implements OnInit {
 
   protected cancel(): void {
     this.editingId.set(null);
+    this.addFormOpen.set(false);
     this.propertyName = '';
     this.errorMessage.set(null);
   }

@@ -1,99 +1,324 @@
 <div class="border border-gray-200 rounded-xl bg-white p-6">
-  <h2 class="text-lg font-semibold text-gray-900 mb-4">Variants</h2>
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold text-gray-900">Variants</h2>
+    @if (!addFormOpen()) {
+      <button type="button" (click)="openAddForm()" class="px-3 py-1.5 rounded-md bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium">
+        + Add
+      </button>
+    }
+  </div>
 
   @if (errorMessage()) {
     <div class="mb-4 px-4 py-2 rounded-md bg-red-50 text-red-700 text-sm">{{ errorMessage() }}</div>
   }
 
-  <form (ngSubmit)="submit()" class="flex flex-col gap-3 mb-6">
-    <div class="flex items-end gap-3 flex-wrap">
-      <label class="flex flex-col gap-1 text-sm text-gray-700">
-        Name
-        <input [(ngModel)]="variantName" name="variantName" required class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
-      </label>
-      <label class="flex flex-col gap-1 text-sm text-gray-700">
-        Description
-        <input [(ngModel)]="variantDescription" name="variantDescription" class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
-      </label>
-      <label class="flex flex-col gap-1 text-sm text-gray-700">
-        Product
-        <select [ngModel]="productId" (ngModelChange)="onProductChange($event)" name="productId" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
-          <option [ngValue]="null">Select a product</option>
-          @for (product of products(); track product.id) {
-            <option [ngValue]="product.id">{{ product.productName }}</option>
-          }
-        </select>
-      </label>
-      <label class="flex flex-col gap-1 text-sm text-gray-700">
-        Price
-        <input type="number" step="0.01" [(ngModel)]="price" name="price" class="border border-gray-300 rounded-md px-3 py-2 text-sm w-28" />
-      </label>
-    </div>
-
-    <div>
-      <p class="text-sm text-gray-700 mb-1">Variant properties</p>
-      <p class="text-xs text-gray-500 mb-2">Pre-filled from the selected product's category and extra properties &mdash; just fill in the values, or add more.</p>
-      @for (row of propertyRows; track $index) {
-        <div class="flex items-center gap-2 mb-2">
-          <select [(ngModel)]="row.propertyDefinitionId" [name]="'propertyDefinitionId' + $index" class="border border-gray-300 rounded-md px-3 py-2 text-sm">
-            <option [ngValue]="null">Select a property</option>
-            @for (property of properties(); track property.id) {
-              <option [ngValue]="property.id">{{ property.propertyName }}</option>
-            }
-          </select>
-          <input [(ngModel)]="row.value" [name]="'value' + $index" placeholder="Value" class="border border-gray-300 rounded-md px-3 py-2 text-sm" />
-          <button type="button" (click)="removePropertyRow($index)" class="text-red-600 hover:underline text-sm">Remove</button>
-        </div>
-      }
-      <button type="button" (click)="addPropertyRow()" class="text-violet-600 hover:underline text-sm">+ Add property</button>
-    </div>
-
-    <div>
-      <p class="text-sm text-gray-700 mb-1">Tags</p>
-      <div class="flex flex-wrap gap-3">
-        @for (tag of tags(); track tag.id) {
-          <label class="flex items-center gap-1.5 text-sm text-gray-700">
-            <input type="checkbox" [checked]="selectedTagIds.has(tag.id)" (change)="toggleTagId(tag.id)" />
-            {{ tag.tagName }}
+  @if (addFormOpen()) {
+    <form (ngSubmit)="submit()" class="flex flex-col gap-4 mb-4">
+      <div class="border border-gray-200 rounded-lg p-4">
+        <p class="text-sm font-semibold text-gray-900 mb-3">Basic info</p>
+        <div class="flex items-start gap-3 flex-wrap">
+          <label class="flex flex-col gap-1 text-sm text-gray-700">
+            Name
+            <input [(ngModel)]="variantName" name="variantName" required class="admin-field" />
           </label>
+          <label class="flex flex-col gap-1 text-sm text-gray-700">
+            Description
+            <input [(ngModel)]="variantDescription" name="variantDescription" class="admin-field" />
+          </label>
+          <label class="flex flex-col gap-1 text-sm text-gray-700">
+            Product
+            <select [ngModel]="productId" (ngModelChange)="onProductChange($event)" name="productId" class="admin-field">
+              <option [ngValue]="null">Select a product</option>
+              @for (product of products(); track product.id) {
+                <option [ngValue]="product.id">{{ product.productName }}</option>
+              }
+            </select>
+          </label>
+          <label class="flex flex-col gap-1 text-sm text-gray-700">
+            Price
+            <input type="number" step="0.01" [(ngModel)]="price" name="price" class="admin-field w-28" />
+          </label>
+        </div>
+      </div>
+
+      <div class="border border-gray-200 rounded-lg p-4">
+        <p class="text-sm font-semibold text-gray-900 mb-1">Variant properties</p>
+        <p class="text-xs text-gray-500 mb-2">Pre-filled from the selected product's category and extra properties &mdash; just fill in the values, or add more.</p>
+        @for (row of propertyRows; track $index) {
+          <div class="flex items-center gap-2 mb-2">
+            <div>
+              <select [(ngModel)]="row.propertyDefinitionId" [name]="'propertyDefinitionId' + $index" class="admin-field">
+                <option [ngValue]="null">Select a property</option>
+                @for (property of properties(); track property.id) {
+                  <option [ngValue]="property.id">{{ property.propertyName }}</option>
+                }
+              </select>
+            </div>
+            <div>
+              <input [(ngModel)]="row.value" [name]="'value' + $index" placeholder="Value" class="admin-field" />
+            </div>
+            <button type="button" (click)="removePropertyRow($index)" class="text-red-600 hover:underline text-sm">Remove</button>
+          </div>
+        }
+        <button type="button" (click)="addPropertyRow()" class="text-violet-600 hover:underline text-sm">+ Add property</button>
+      </div>
+
+      <div class="border border-gray-200 rounded-lg p-4">
+        <p class="text-sm font-semibold text-gray-900 mb-2">Tags</p>
+        <div class="flex flex-wrap gap-3">
+          @for (tag of tags(); track tag.id) {
+            <label class="flex items-center gap-1.5 text-sm text-gray-700">
+              <input type="checkbox" [checked]="selectedTagIds.has(tag.id)" (change)="toggleTagId(tag.id)" />
+              {{ tag.tagName }}
+            </label>
+          }
+        </div>
+      </div>
+
+      <div class="border border-gray-200 rounded-lg p-4">
+        <p class="text-sm font-semibold text-gray-900 mb-2">Images</p>
+        <p class="text-xs text-gray-500">Save the variant first, then you'll be able to add images here.</p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button type="submit" class="px-4 py-2 rounded-md bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium">Create</button>
+        <button type="button" (click)="cancel()" class="px-4 py-2 rounded-md border border-gray-300 text-sm text-gray-700">Cancel</button>
+      </div>
+    </form>
+  }
+
+  <label class="flex flex-col gap-1 text-sm text-gray-700 mb-3">
+    Search
+    <input
+      [ngModel]="searchQuery()"
+      (ngModelChange)="searchQuery.set($event)"
+      [ngModelOptions]="{ standalone: true }"
+      placeholder="Cauta dupa produs sau varianta..."
+      class="admin-field w-full max-w-sm"
+    />
+  </label>
+
+  <div class="flex flex-col gap-2">
+    @for (group of groupedVariants(); track group.product.id) {
+      <div class="border border-gray-200 rounded-lg overflow-hidden">
+        <button
+          type="button"
+          (click)="toggleProductGroup(group.product.id)"
+          class="w-full flex items-center justify-between gap-3 px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+        >
+          <span>
+            <span class="text-sm font-semibold text-gray-900">{{ group.product.productName }}</span>
+            <span class="text-xs text-gray-500 ml-2">{{ group.product.category.categoryName }}</span>
+            <span class="text-xs text-gray-400 ml-2">({{ group.variants.length }})</span>
+          </span>
+          <svg
+            width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="transition-transform shrink-0"
+            [class.rotate-180]="isGroupExpanded(group.product.id)"
+          >
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </button>
+
+        @if (isGroupExpanded(group.product.id)) {
+          <div class="divide-y divide-gray-100">
+            @for (item of group.variants; track item.id) {
+              <div>
+                <div (click)="toggleEdit(item)" class="flex items-center justify-between gap-3 px-4 py-2.5 hover:bg-gray-50 cursor-pointer transition-colors">
+                  <span class="text-sm text-gray-900">{{ item.variantName }}</span>
+                  <span class="flex items-center gap-3 shrink-0">
+                    <span class="text-sm text-gray-700">{{ item.price }} Lei</span>
+                    <button type="button" (click)="$event.stopPropagation(); copyFrom(item)" class="text-violet-600 hover:underline text-sm">Copy</button>
+                    <button type="button" (click)="$event.stopPropagation(); remove(item)" class="text-red-600 hover:underline text-sm">Delete</button>
+                  </span>
+                </div>
+
+                @if (editingId() === item.id) {
+                  <form (ngSubmit)="submit()" class="flex flex-col gap-4 px-4 py-4 bg-gray-50 border-t border-gray-100">
+                    <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                      <p class="text-sm font-semibold text-gray-900 mb-3">Basic info</p>
+                      <div class="flex items-start gap-3 flex-wrap">
+                        <label class="flex flex-col gap-1 text-sm text-gray-700">
+                          Name
+                          <input [(ngModel)]="variantName" name="variantName" required class="admin-field" />
+                        </label>
+                        <label class="flex flex-col gap-1 text-sm text-gray-700">
+                          Description
+                          <input [(ngModel)]="variantDescription" name="variantDescription" class="admin-field" />
+                        </label>
+                        <label class="flex flex-col gap-1 text-sm text-gray-700">
+                          Product
+                          <select [ngModel]="productId" (ngModelChange)="onProductChange($event)" name="productId" class="admin-field">
+                            <option [ngValue]="null">Select a product</option>
+                            @for (product of products(); track product.id) {
+                              <option [ngValue]="product.id">{{ product.productName }}</option>
+                            }
+                          </select>
+                        </label>
+                        <label class="flex flex-col gap-1 text-sm text-gray-700">
+                          Price
+                          <input type="number" step="0.01" [(ngModel)]="price" name="price" class="admin-field w-28" />
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                      <p class="text-sm font-semibold text-gray-900 mb-1">Variant properties</p>
+                      <p class="text-xs text-gray-500 mb-2">Pre-filled from the selected product's category and extra properties &mdash; just fill in the values, or add more.</p>
+                      @for (row of propertyRows; track $index) {
+                        <div class="flex items-center gap-2 mb-2">
+                          <select [(ngModel)]="row.propertyDefinitionId" [name]="'propertyDefinitionId' + $index" class="admin-field">
+                            <option [ngValue]="null">Select a property</option>
+                            @for (property of properties(); track property.id) {
+                              <option [ngValue]="property.id">{{ property.propertyName }}</option>
+                            }
+                          </select>
+                          <input [(ngModel)]="row.value" [name]="'value' + $index" placeholder="Value" class="admin-field" />
+                          <button type="button" (click)="removePropertyRow($index)" class="text-red-600 hover:underline text-sm">Remove</button>
+                        </div>
+                      }
+                      <button type="button" (click)="addPropertyRow()" class="text-violet-600 hover:underline text-sm">+ Add property</button>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                      <p class="text-sm font-semibold text-gray-900 mb-2">Tags</p>
+                      <div class="flex flex-wrap gap-3">
+                        @for (tag of tags(); track tag.id) {
+                          <label class="flex items-center gap-1.5 text-sm text-gray-700">
+                            <input type="checkbox" [checked]="selectedTagIds.has(tag.id)" (change)="toggleTagId(tag.id)" />
+                            {{ tag.tagName }}
+                          </label>
+                        }
+                      </div>
+                    </div>
+
+                    <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                      <p class="text-sm font-semibold text-gray-900 mb-2">Images</p>
+                      @if (editingVariant(); as variant) {
+                        <div class="flex flex-wrap gap-3 mb-2">
+                          @for (image of variant.images; track image.id) {
+                            <div class="relative w-20 h-20 rounded-md overflow-hidden border border-gray-200">
+                              <img [src]="image.thumbnailUrl" alt="" class="w-full h-full object-cover" />
+                              <button
+                                type="button"
+                                (click)="onDeleteImage(variant.id, image.id)"
+                                aria-label="remove-image"
+                                class="absolute top-0.5 right-0.5 w-5 h-5 flex items-center justify-center rounded-full bg-white/90 hover:bg-white text-red-600 text-xs leading-none"
+                              >
+                                &times;
+                              </button>
+                            </div>
+                          }
+                        </div>
+                        <div
+                          (click)="fileInput.click()"
+                          (dragover)="onImageDragOver($event)"
+                          (dragleave)="onImageDragLeave()"
+                          (drop)="onImageDrop($event)"
+                          class="border-2 border-dashed rounded-lg py-6 flex flex-col items-center justify-center gap-1 cursor-pointer transition-colors"
+                          [class.border-violet-500]="isDragOver()"
+                          [class.bg-violet-50]="isDragOver()"
+                          [class.border-gray-300]="!isDragOver()"
+                        >
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                          </svg>
+                          <p class="text-sm text-gray-600">Trage poze aici sau apasa pentru a alege</p>
+                          <p class="text-xs text-gray-400">Poti selecta mai multe deodata</p>
+                          <input
+                            #fileInput
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            (change)="onImageFileSelected($event)"
+                            (click)="$event.stopPropagation()"
+                            [disabled]="uploadingImage()"
+                            class="hidden"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          (click)="openBucketPicker()"
+                          class="mt-2 text-sm text-violet-600 hover:underline"
+                        >
+                          Alege din bucket
+                        </button>
+                        @if (uploadingImage()) {
+                          <p class="text-xs text-gray-500 mt-1">Se incarca...</p>
+                        }
+                      }
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                      <button type="submit" class="px-4 py-2 rounded-md bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium">Save</button>
+                      <button type="button" (click)="cancel()" class="px-4 py-2 rounded-md border border-gray-300 text-sm text-gray-700">Cancel</button>
+                    </div>
+                  </form>
+                }
+              </div>
+            }
+          </div>
         }
       </div>
-    </div>
-
-    <div class="flex items-center gap-3">
-      <button type="submit" class="px-4 py-2 rounded-md bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium">
-        {{ editingId() === null ? 'Create' : 'Save' }}
-      </button>
-      @if (editingId() !== null) {
-        <button type="button" (click)="cancel()" class="px-4 py-2 rounded-md border border-gray-300 text-sm text-gray-700">Cancel</button>
-      }
-    </div>
-  </form>
-
-  <table class="w-full text-sm">
-    <thead>
-      <tr class="text-left text-gray-500 border-b border-gray-200">
-        <th class="py-2">ID</th>
-        <th class="py-2">Name</th>
-        <th class="py-2">Product</th>
-        <th class="py-2">Price</th>
-        <th class="py-2"></th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (item of items(); track item.id) {
-        <tr class="border-b border-gray-100">
-          <td class="py-2">{{ item.id }}</td>
-          <td class="py-2">{{ item.variantName }}</td>
-          <td class="py-2">{{ item.product.productName }}</td>
-          <td class="py-2">{{ item.price }} Lei</td>
-          <td class="py-2 text-right">
-            <button type="button" (click)="startEdit(item)" class="text-violet-600 hover:underline mr-3">Edit</button>
-            <button type="button" (click)="copyFrom(item)" class="text-violet-600 hover:underline mr-3">Copy</button>
-            <button type="button" (click)="remove(item)" class="text-red-600 hover:underline">Delete</button>
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
+    } @empty {
+      <p class="text-sm text-gray-500">Niciun rezultat.</p>
+    }
+  </div>
 </div>
+
+@if (bucketPickerOpen()) {
+  <div class="fixed inset-0 z-40 bg-black/40" (click)="closeBucketPicker()"></div>
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-6 pointer-events-none">
+    <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[80vh] flex flex-col pointer-events-auto">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+        <p class="text-sm font-semibold text-gray-900">Alege imagini din bucket</p>
+        <button type="button" (click)="closeBucketPicker()" class="text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
+      </div>
+      <div class="p-4 overflow-y-auto">
+        @if (loadingBucketImages()) {
+          <p class="text-sm text-gray-500">Se incarca...</p>
+        } @else if (bucketImages().length === 0) {
+          <p class="text-sm text-gray-500">Bucket-ul nu are inca nicio imagine.</p>
+        } @else {
+          <div class="grid grid-cols-4 sm:grid-cols-5 gap-3">
+            @for (image of bucketImages(); track image.thumbnailKey) {
+              <button
+                type="button"
+                (click)="toggleBucketSelection(image)"
+                class="relative aspect-square rounded-md overflow-hidden border-2 transition-colors"
+                [class.border-violet-500]="selectedBucketKeys().has(image.thumbnailKey)"
+                [class.border-transparent]="!selectedBucketKeys().has(image.thumbnailKey)"
+                [attr.title]="image.sourceVariantId ? 'Folosita si la varianta #' + image.sourceVariantId : ''"
+              >
+                <img [src]="image.thumbnailUrl" alt="" class="w-full h-full object-cover" />
+                @if (selectedBucketKeys().has(image.thumbnailKey)) {
+                  <div class="absolute inset-0 bg-violet-600/20 flex items-start justify-end p-1">
+                    <span class="w-5 h-5 rounded-full bg-violet-600 text-white flex items-center justify-center text-xs leading-none">&check;</span>
+                  </div>
+                }
+              </button>
+            }
+          </div>
+        }
+      </div>
+      <div class="flex items-center justify-between gap-3 px-4 py-3 border-t border-gray-100">
+        <p class="text-sm text-gray-500">
+          {{ selectedBucketKeys().size }} {{ selectedBucketKeys().size === 1 ? 'imagine selectata' : 'imagini selectate' }}
+        </p>
+        <div class="flex items-center gap-3">
+          <button type="button" (click)="closeBucketPicker()" class="px-4 py-2 rounded-md border border-gray-300 text-sm text-gray-700">Anuleaza</button>
+          <button
+            type="button"
+            (click)="confirmBucketSelection()"
+            [disabled]="selectedBucketKeys().size === 0 || attachingBucketImages()"
+            class="px-4 py-2 rounded-md bg-violet-600 hover:bg-violet-700 text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {{ attachingBucketImages() ? 'Se adauga...' : 'Adauga' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

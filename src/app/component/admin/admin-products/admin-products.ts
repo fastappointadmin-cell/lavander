@@ -17,6 +17,7 @@ export class AdminProducts implements OnInit {
   protected readonly categories = signal<FlattenedCategory[]>([]);
   protected readonly properties = signal<PropertyDefinition[]>([]);
   protected readonly editingId = signal<number | null>(null);
+  protected readonly addFormOpen = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
 
   protected productName = '';
@@ -44,7 +45,22 @@ export class AdminProducts implements OnInit {
     }
   }
 
-  protected startEdit(item: Product): void {
+  protected openAddForm(): void {
+    this.editingId.set(null);
+    this.productName = '';
+    this.productDescription = '';
+    this.categoryId = null;
+    this.selectedPropertyIds = new Set();
+    this.errorMessage.set(null);
+    this.addFormOpen.set(true);
+  }
+
+  protected toggleEdit(item: Product): void {
+    this.addFormOpen.set(false);
+    if (this.editingId() === item.id) {
+      this.editingId.set(null);
+      return;
+    }
     this.editingId.set(item.id);
     this.productName = item.productName;
     this.productDescription = item.productDescription;
@@ -55,6 +71,7 @@ export class AdminProducts implements OnInit {
 
   protected cancel(): void {
     this.editingId.set(null);
+    this.addFormOpen.set(false);
     this.productName = '';
     this.productDescription = '';
     this.categoryId = null;

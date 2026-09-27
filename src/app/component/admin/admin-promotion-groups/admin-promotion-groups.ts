@@ -15,9 +15,12 @@ export class AdminPromotionGroups implements OnInit {
   protected readonly items = signal<PromotionGroup[]>([]);
   protected readonly tags = signal<Tag[]>([]);
   protected readonly editingId = signal<number | null>(null);
+  protected readonly addFormOpen = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
 
   protected groupName = '';
+  protected description = '';
+  protected featured = false;
   protected selectedTagIds = new Set<number>();
 
   ngOnInit(): void {
@@ -37,16 +40,36 @@ export class AdminPromotionGroups implements OnInit {
     }
   }
 
-  protected startEdit(item: PromotionGroup): void {
+  protected openAddForm(): void {
+    this.editingId.set(null);
+    this.groupName = '';
+    this.description = '';
+    this.featured = false;
+    this.selectedTagIds = new Set();
+    this.errorMessage.set(null);
+    this.addFormOpen.set(true);
+  }
+
+  protected toggleEdit(item: PromotionGroup): void {
+    this.addFormOpen.set(false);
+    if (this.editingId() === item.id) {
+      this.editingId.set(null);
+      return;
+    }
     this.editingId.set(item.id);
     this.groupName = item.groupName;
+    this.description = item.description ?? '';
+    this.featured = item.featured;
     this.selectedTagIds = new Set(item.tags.map((t) => t.id));
     this.errorMessage.set(null);
   }
 
   protected cancel(): void {
     this.editingId.set(null);
+    this.addFormOpen.set(false);
     this.groupName = '';
+    this.description = '';
+    this.featured = false;
     this.selectedTagIds = new Set();
     this.errorMessage.set(null);
   }
@@ -55,6 +78,8 @@ export class AdminPromotionGroups implements OnInit {
     this.errorMessage.set(null);
     const request = {
       groupName: this.groupName,
+      description: this.description,
+      featured: this.featured,
       tagIds: Array.from(this.selectedTagIds),
     };
     const id = this.editingId();

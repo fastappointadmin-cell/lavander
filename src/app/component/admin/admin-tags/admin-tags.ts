@@ -14,6 +14,7 @@ export class AdminTags implements OnInit {
 
   protected readonly items = signal<Tag[]>([]);
   protected readonly editingId = signal<number | null>(null);
+  protected readonly addFormOpen = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
 
   protected tagName = '';
@@ -26,7 +27,19 @@ export class AdminTags implements OnInit {
     this.productCatalog.getTags().subscribe((items) => this.items.set(items));
   }
 
-  protected startEdit(item: Tag): void {
+  protected openAddForm(): void {
+    this.editingId.set(null);
+    this.tagName = '';
+    this.errorMessage.set(null);
+    this.addFormOpen.set(true);
+  }
+
+  protected toggleEdit(item: Tag): void {
+    this.addFormOpen.set(false);
+    if (this.editingId() === item.id) {
+      this.editingId.set(null);
+      return;
+    }
     this.editingId.set(item.id);
     this.tagName = item.tagName;
     this.errorMessage.set(null);
@@ -34,6 +47,7 @@ export class AdminTags implements OnInit {
 
   protected cancel(): void {
     this.editingId.set(null);
+    this.addFormOpen.set(false);
     this.tagName = '';
     this.errorMessage.set(null);
   }
