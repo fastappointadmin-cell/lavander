@@ -1,18 +1,21 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { interval } from 'rxjs';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ProductCatalog } from '../../service/product-catalog';
 import { CartStore } from '../../service/cart-store';
 import { CategoryMenuPanel } from '../category-menu-panel/category-menu-panel';
 import { CartDropdown } from '../cart-dropdown/cart-dropdown';
+import { SearchResults } from '../search-results/search-results';
 import { Context } from '../../service/context';
 import { Auth } from '../../service/auth';
 import { ProductCategory, ProductCategoryGroup, ProductSubCategoryGroup, PromotionGroup } from '../../models/models';
-import { getCategoryPathSlugs, slugify } from '../../utils/category-path.util';
+import { findCategoryPathByCategoryId, getCategoryPathSlugs, slugify } from '../../utils/category-path.util';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CategoryMenuPanel, RouterLink, RouterLinkActive, CartDropdown],
+  imports: [CategoryMenuPanel, RouterLink, RouterLinkActive, CartDropdown, SearchResults, FormsModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
@@ -30,6 +33,67 @@ export class Navbar {
   protected readonly promotionGroups = toSignal(this.productCatalog.getPromotionGroups(), {
     initialValue: [],
   });
+
+  protected readonly featuredPromotions = computed(() => this.promotionGroups().filter((g) => g.featured));
+
+  // Routed through toSignal (like every other async value in this component) rather
+  // than a raw setInterval, since this app runs zoneless — a plain timer callback's
+  // signal write never reaches the renderer, `toSignal`'s subscription does.
+  private readonly featuredTick = toSignal(interval(5000), { initialValue: 0 });
+
+  protected readonly currentFeaturedPromotion = computed(() => {
+    const list = this.featuredPromotions();
+    return list.length > 0 ? list[this.featuredTick() % list.length] : null;
+  });
+
+  protected readonly currentFeaturedSlug = computed(() => {
+    const promotion = this.currentFeaturedPromotion();
+    return promotion ? slugify(promotion.groupName) : null;
+  });
+
+  // The catalog is small enough that fetching it whole and filtering client-side (no
+  // separate search endpoint) is simpler and plenty fast — same tradeoff already made
+  // for the "recommended products" home page.
+  private readonly allVariants = toSignal(this.productCatalog.getAllVariants(), { initialValue: [] });
+
+  protected readonly searchQuery = signal('');
+
+  protected readonly searchResults = computed(() => {
+    const query = this.searchQuery().trim().toLowerCase();
+    if (!query) {
+      return [];
+    }
+    const groups = this.categoryGroups();
+    return this.allVariants()
+      .filter((variant) => {
+        if (
+          variant.variantName.toLowerCase().includes(query) ||
+          variant.product.productName.toLowerCase().includes(query) ||
+          variant.variantDescription.toLowerCase().includes(query) ||
+          variant.variantProperties.some((property) => property.propertyValue.toLowerCase().includes(query))
+        ) {
+          return true;
+        }
+        const categoryName = findCategoryPathByCategoryId(groups, variant.product.categoryId)?.category
+          .categoryName;
+        return categoryName?.toLowerCase().includes(query) ?? false;
+      })
+      .slice(0, 8);
+  });
+
+  protected readonly searchDropdownOpen = computed(() => this.searchQuery().trim().length > 0);
+
+  protected onSearchInput(value: string): void {
+    this.searchQuery.set(value);
+  }
+
+  protected onSearchResultSelected(): void {
+    this.searchQuery.set('');
+  }
+
+  protected onSearchDismiss(): void {
+    this.searchQuery.set('');
+  }
 
   private readonly hovered = signal(false);
   private closeTimeoutId: ReturnType<typeof setTimeout> | undefined;

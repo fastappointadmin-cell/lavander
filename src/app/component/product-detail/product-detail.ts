@@ -57,6 +57,33 @@ export class ProductDetail {
     this.reviewSubmitted.set(false);
   });
 
+  protected readonly selectedImageIndex = signal(0);
+
+  private readonly resetSelectedImageOnVariantChange = effect(() => {
+    this.context.selectedVariant();
+    this.selectedImageIndex.set(0);
+  });
+
+  protected onImageSelect(index: number): void {
+    this.selectedImageIndex.set(index);
+  }
+
+  protected onPrevImage(): void {
+    const total = this.variant()?.images.length ?? 0;
+    if (total === 0) {
+      return;
+    }
+    this.selectedImageIndex.update((i) => (i - 1 + total) % total);
+  }
+
+  protected onNextImage(): void {
+    const total = this.variant()?.images.length ?? 0;
+    if (total === 0) {
+      return;
+    }
+    this.selectedImageIndex.update((i) => (i + 1) % total);
+  }
+
   protected onTagClick(propertyDefinitionId: number, value: string): void {
     const path = this.categoryPath();
     const productId = this.context.selectedProductId();

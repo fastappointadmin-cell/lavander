@@ -55,7 +55,22 @@ export interface Tag {
 export interface PromotionGroup {
   id: number;
   groupName: string;
+  description: string | null;
+  featured: boolean;
   tags: Tag[];
+}
+
+export interface VariantImage {
+  id: number;
+  thumbnailUrl: string;
+  mediumUrl: string;
+}
+
+export interface BucketImage {
+  thumbnailKey: string;
+  thumbnailUrl: string;
+  mediumUrl: string;
+  sourceVariantId: number | null;
 }
 
 export interface ProductVariant {
@@ -65,6 +80,7 @@ export interface ProductVariant {
   product: ProductRef;
   variantProperties: PropertyValue[];
   tags: Tag[];
+  images: VariantImage[];
   price: number;
   starRating: number;
   reviewCount: number;

@@ -1,7 +1,16 @@
 <div class="text-sm text-white w-full">
-    <div class="text-center font-medium py-2 bg-gradient-to-r from-violet-500 via-[#9938CA] to-[#E0724A]">
-       <p>Pentru promotii in desfasurare <span class="underline underline-offset-2">link</span></p>
-    </div>
+    @if (currentFeaturedPromotion(); as promotion) {
+      <a
+        [routerLink]="['/promotions', currentFeaturedSlug()]"
+        class="block text-center font-medium py-2 bg-gradient-to-r from-violet-500 via-[#9938CA] to-[#E0724A] hover:opacity-95 transition-opacity"
+      >
+        {{ promotion.groupName }}
+        @if (promotion.description) {
+          <span class="font-normal"> &mdash; {{ promotion.description }}</span>
+        }
+        <span class="underline underline-offset-2 ml-1">vezi aici</span>
+      </a>
+    }
    <div class="md:hidden bg-white px-4 py-3 border-b border-gray-100 flex items-center gap-2">
        <button
            type="button"
@@ -16,13 +25,35 @@
            </svg>
        </button>
 
-       <label class="flex-1 flex items-center border border-gray-200 rounded-full pl-4 pr-1.5 py-2 gap-2 text-gray-500 bg-white shadow-md focus-within:border-gray-300 transition">
-           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-               <circle cx="11" cy="11" r="7"/>
-               <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-           </svg>
-           <input type="search" placeholder="Cauta produse..." class="outline-none bg-transparent text-sm w-full text-gray-900 placeholder:text-gray-400" />
-       </label>
+       <div class="relative flex-1">
+           <label class="flex items-center border border-gray-200 rounded-full pl-4 pr-1.5 py-2 gap-2 text-gray-500 bg-white shadow-md focus-within:border-gray-300 transition">
+               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                   <circle cx="11" cy="11" r="7"/>
+                   <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+               </svg>
+               <input
+                   type="search"
+                   placeholder="Cauta produse..."
+                   name="searchMobile"
+                   [ngModel]="searchQuery()"
+                   (ngModelChange)="onSearchInput($event)"
+                   [ngModelOptions]="{ standalone: true }"
+                   class="outline-none bg-transparent text-sm w-full text-gray-900 placeholder:text-gray-400"
+               />
+           </label>
+
+           @if (searchDropdownOpen()) {
+               <div class="fixed inset-0 z-40" (click)="onSearchDismiss()"></div>
+               <div class="absolute left-0 right-0 top-full mt-2 z-50">
+                   <app-search-results
+                       [query]="searchQuery()"
+                       [results]="searchResults()"
+                       [categoryGroups]="categoryGroups()"
+                       (resultSelected)="onSearchResultSelected()"
+                   />
+               </div>
+           }
+       </div>
    </div>
 
    @if (mobileMenuOpen()) {
@@ -145,13 +176,35 @@
            }
        </div>
 
-       <label class="hidden md:flex w-full items-center border border-gray-300 rounded-full pl-4 pr-1.5 py-1.5 gap-2 text-gray-500 focus-within:border-gray-400 transition">
-           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-               <circle cx="11" cy="11" r="7"/>
-               <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-           </svg>
-           <input type="search" placeholder="Cauta produse..." class="outline-none bg-transparent text-sm w-full text-gray-900 placeholder:text-gray-400" />
-       </label>
+       <div class="hidden md:block relative w-full">
+           <label class="flex w-full items-center border border-gray-300 rounded-full pl-4 pr-1.5 py-1.5 gap-2 text-gray-500 focus-within:border-gray-400 transition">
+               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                   <circle cx="11" cy="11" r="7"/>
+                   <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+               </svg>
+               <input
+                   type="search"
+                   placeholder="Cauta produse..."
+                   name="search"
+                   [ngModel]="searchQuery()"
+                   (ngModelChange)="onSearchInput($event)"
+                   [ngModelOptions]="{ standalone: true }"
+                   class="outline-none bg-transparent text-sm w-full text-gray-900 placeholder:text-gray-400"
+               />
+           </label>
+
+           @if (searchDropdownOpen()) {
+               <div class="fixed inset-0 z-40" (click)="onSearchDismiss()"></div>
+               <div class="absolute left-0 right-0 top-full mt-2 z-50">
+                   <app-search-results
+                       [query]="searchQuery()"
+                       [results]="searchResults()"
+                       [categoryGroups]="categoryGroups()"
+                       (resultSelected)="onSearchResultSelected()"
+                   />
+               </div>
+           }
+       </div>
 
        <div class="flex items-center gap-3 justify-self-end">
            @if (auth.isAdmin()) {
@@ -202,7 +255,7 @@
 
                @if (cartDropdownOpen()) {
                    <div class="fixed inset-0 z-40" (click)="onCartDropdownBackdropClick()"></div>
-                   <app-cart-dropdown class="absolute right-0 top-full z-50 mt-2"></app-cart-dropdown>
+                   <app-cart-dropdown class="absolute right-0 top-full z-50 mt-2" (itemSelected)="onCartDropdownBackdropClick()"></app-cart-dropdown>
                }
            </div>
 

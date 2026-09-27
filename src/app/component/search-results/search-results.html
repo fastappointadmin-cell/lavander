@@ -1,0 +1,23 @@
+<div class="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-[70vh] overflow-y-auto">
+  @if (results().length > 0) {
+    <ul class="divide-y divide-gray-100">
+      @for (variant of results(); track variant.id) {
+        <li>
+          <button
+            type="button"
+            (click)="onResultClick(variant)"
+            class="w-full flex items-center justify-between gap-3 px-4 py-2.5 text-left hover:bg-gray-50 transition-colors"
+          >
+            <span class="min-w-0">
+              <span class="block text-sm text-gray-900 truncate">{{ variant.variantName }}</span>
+              <span class="block text-xs text-gray-500 truncate">{{ variant.product.productName }}</span>
+            </span>
+            <span class="shrink-0 text-sm font-medium text-gray-900">{{ variant.price }} Lei</span>
+          </button>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="px-4 py-3 text-sm text-gray-500">Niciun rezultat pentru „{{ query() }}"</p>
+  }
+</div>
