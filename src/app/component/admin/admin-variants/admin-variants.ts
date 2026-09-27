@@ -109,10 +109,17 @@ export class AdminVariants implements OnInit {
   /**
    * Rows for every property the product's category defines plus the
    * product's own extra properties, keeping values already entered for
-   * matching properties and preserving any ad-hoc rows the admin added
-   * that aren't part of that set.
+   * matching properties. Ad-hoc rows that aren't part of that set are only
+   * preserved for `preserveInapplicable` callers (loading an existing
+   * variant for edit, where they may be genuinely-saved custom properties) —
+   * not when the admin actively switches the product, where leftovers from
+   * whatever was previously selected would otherwise linger unfilled.
    */
-  private buildPropertyRowsForProduct(productId: number | null, existingRows: VariantPropertyRow[]): VariantPropertyRow[] {
+  private buildPropertyRowsForProduct(
+    productId: number | null,
+    existingRows: VariantPropertyRow[],
+    preserveInapplicable = true,
+  ): VariantPropertyRow[] {
     if (productId === null) {
       return existingRows;
     }
@@ -135,9 +142,11 @@ export class AdminVariants implements OnInit {
       value: existingValueByPropertyId.get(property.id) ?? '',
     }));
 
-    for (const row of existingRows) {
-      if (row.propertyDefinitionId !== null && !applicable.has(row.propertyDefinitionId)) {
-        rows.push(row);
+    if (preserveInapplicable) {
+      for (const row of existingRows) {
+        if (row.propertyDefinitionId !== null && !applicable.has(row.propertyDefinitionId)) {
+          rows.push(row);
+        }
       }
     }
     return rows;
@@ -161,7 +170,7 @@ export class AdminVariants implements OnInit {
 
   protected onProductChange(value: number | null): void {
     this.productId = value;
-    this.propertyRows = this.buildPropertyRowsForProduct(value, this.propertyRows);
+    this.propertyRows = this.buildPropertyRowsForProduct(value, this.propertyRows, false);
   }
 
   protected openAddForm(): void {
