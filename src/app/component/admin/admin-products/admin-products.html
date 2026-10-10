@@ -56,12 +56,12 @@
   <div class="border border-gray-200 rounded-lg divide-y divide-gray-100">
     @for (item of items(); track item.id) {
       <div>
-        <div (click)="toggleEdit(item)" class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors">
-          <span>
+        <div (click)="toggleEdit(item)" class="flex items-center justify-between gap-2 px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors">
+          <span class="min-w-0 flex-1 truncate">
             <span class="text-sm text-gray-900">{{ item.productName }}</span>
             <span class="text-xs text-gray-500 ml-2">{{ item.category.categoryName }}</span>
           </span>
-          <button type="button" (click)="$event.stopPropagation(); remove(item)" class="text-red-600 hover:underline text-sm">Delete</button>
+          <button type="button" (click)="$event.stopPropagation(); remove(item)" class="text-red-600 hover:underline text-sm shrink-0">Delete</button>
         </div>
         @if (editingId() === item.id) {
           <form (ngSubmit)="submit()" class="flex flex-col gap-3 px-4 py-3 bg-gray-50 border-t border-gray-100">

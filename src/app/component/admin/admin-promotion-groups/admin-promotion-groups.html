@@ -14,12 +14,12 @@
 
   @if (addFormOpen()) {
     <form (ngSubmit)="submit()" class="flex flex-col gap-3 mb-4 border border-gray-200 rounded-lg p-4">
-      <label class="flex flex-col gap-1 text-sm text-gray-700 w-64">
+      <label class="flex flex-col gap-1 text-sm text-gray-700 w-full sm:w-64">
         Name
         <input [(ngModel)]="groupName" name="groupName" required class="admin-field" />
       </label>
 
-      <label class="flex flex-col gap-1 text-sm text-gray-700 w-96">
+      <label class="flex flex-col gap-1 text-sm text-gray-700 w-full sm:w-96">
         Description (optional, shown in the top banner)
         <input [(ngModel)]="description" name="description" class="admin-field" />
       </label>
@@ -51,24 +51,24 @@
   <div class="border border-gray-200 rounded-lg divide-y divide-gray-100">
     @for (item of items(); track item.id) {
       <div>
-        <div (click)="toggleEdit(item)" class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors">
-          <span>
+        <div (click)="toggleEdit(item)" class="flex items-center justify-between gap-2 px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors">
+          <span class="min-w-0 flex-1 truncate">
             <span class="text-sm text-gray-900">{{ item.groupName }}</span>
             @if (item.featured) {
               <span class="ml-2 px-2 py-0.5 rounded-full bg-violet-50 text-violet-600 text-xs font-medium">Featured</span>
             }
             <span class="text-xs text-gray-400 ml-2">{{ item.tags.length }} tags</span>
           </span>
-          <button type="button" (click)="$event.stopPropagation(); remove(item)" class="text-red-600 hover:underline text-sm">Delete</button>
+          <button type="button" (click)="$event.stopPropagation(); remove(item)" class="text-red-600 hover:underline text-sm shrink-0">Delete</button>
         </div>
         @if (editingId() === item.id) {
           <form (ngSubmit)="submit()" class="flex flex-col gap-3 px-4 py-3 bg-gray-50 border-t border-gray-100">
-            <label class="flex flex-col gap-1 text-sm text-gray-700 w-64">
+            <label class="flex flex-col gap-1 text-sm text-gray-700 w-full sm:w-64">
               Name
               <input [(ngModel)]="groupName" name="groupName" required class="admin-field" />
             </label>
 
-            <label class="flex flex-col gap-1 text-sm text-gray-700 w-96">
+            <label class="flex flex-col gap-1 text-sm text-gray-700 w-full sm:w-96">
               Description (optional, shown in the top banner)
               <input [(ngModel)]="description" name="description" class="admin-field" />
             </label>

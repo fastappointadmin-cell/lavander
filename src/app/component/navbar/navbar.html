@@ -76,6 +76,15 @@
            </div>
 
            <div class="px-2 py-2 overflow-y-auto">
+               @if (auth.isAdmin()) {
+                   <a
+                       routerLink="/admin"
+                       (click)="onMobileMenuToggle()"
+                       class="block px-3 py-3 text-sm font-medium text-violet-600 border-b border-gray-100"
+                   >
+                       Admin
+                   </a>
+               }
                @for (group of categoryGroups(); track group.id) {
                    <div class="border-b border-gray-100">
                        <button

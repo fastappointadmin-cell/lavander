@@ -106,7 +106,7 @@
           (click)="toggleProductGroup(group.product.id)"
           class="w-full flex items-center justify-between gap-3 px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
         >
-          <span>
+          <span class="min-w-0 flex-1 truncate">
             <span class="text-sm font-semibold text-gray-900">{{ group.product.productName }}</span>
             <span class="text-xs text-gray-500 ml-2">{{ group.product.category.categoryName }}</span>
             <span class="text-xs text-gray-400 ml-2">({{ group.variants.length }})</span>
@@ -125,7 +125,7 @@
             @for (item of group.variants; track item.id) {
               <div>
                 <div (click)="toggleEdit(item)" class="flex items-center justify-between gap-3 px-4 py-2.5 hover:bg-gray-50 cursor-pointer transition-colors">
-                  <span class="text-sm text-gray-900">{{ item.variantName }}</span>
+                  <span class="text-sm text-gray-900 min-w-0 flex-1 truncate">{{ item.variantName }}</span>
                   <span class="flex items-center gap-3 shrink-0">
                     <span class="text-sm text-gray-700">{{ item.price }} Lei</span>
                     <button type="button" (click)="$event.stopPropagation(); copyFrom(item)" class="text-violet-600 hover:underline text-sm">Copy</button>
