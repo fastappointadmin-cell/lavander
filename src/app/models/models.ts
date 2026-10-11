@@ -6,6 +6,7 @@ export interface PropertyDefinition {
 export interface ProductCategoryGroup {
   id: number;
   groupName: string;
+  icon: string | null;
   subGroups: ProductSubCategoryGroup[];
   categories: ProductCategory[];
 }
@@ -13,6 +14,7 @@ export interface ProductCategoryGroup {
 export interface ProductSubCategoryGroup {
   id: number;
   groupName: string;
+  icon: string | null;
   categories: ProductCategory[];
 }
 

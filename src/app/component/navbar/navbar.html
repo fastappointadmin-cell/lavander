@@ -92,7 +92,10 @@
                            (click)="onMobileGroupToggle(group.id)"
                            class="w-full flex items-center justify-between px-3 py-3 text-left text-sm font-medium text-gray-900"
                        >
-                           <span>{{ group.groupName }}</span>
+                           <span>
+                               @if (group.icon) { <span class="mr-1.5">{{ group.icon }}</span> }
+                               {{ group.groupName }}
+                           </span>
                            <svg
                                width="16"
                                height="16"
@@ -112,7 +115,10 @@
                        @if (expandedGroupId() === group.id) {
                            <div class="pb-3 pl-3">
                                @for (subGroup of group.subGroups; track subGroup.id) {
-                                   <p class="px-3 pt-2 pb-1 text-xs font-semibold text-gray-500">{{ subGroup.groupName }}</p>
+                                   <p class="px-3 pt-2 pb-1 text-xs font-semibold text-gray-500">
+                                       @if (subGroup.icon) { <span class="mr-1">{{ subGroup.icon }}</span> }
+                                       {{ subGroup.groupName }}
+                                   </p>
                                    @for (category of subGroup.categories; track category.id) {
                                        <button
                                            type="button"

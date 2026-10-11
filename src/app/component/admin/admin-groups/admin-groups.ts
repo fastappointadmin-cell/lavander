@@ -18,6 +18,7 @@ export class AdminGroups implements OnInit {
   protected readonly errorMessage = signal<string | null>(null);
 
   protected groupName = '';
+  protected icon = '';
 
   ngOnInit(): void {
     this.load();
@@ -30,6 +31,7 @@ export class AdminGroups implements OnInit {
   protected openAddForm(): void {
     this.editingId.set(null);
     this.groupName = '';
+    this.icon = '';
     this.errorMessage.set(null);
     this.addFormOpen.set(true);
   }
@@ -42,6 +44,7 @@ export class AdminGroups implements OnInit {
     }
     this.editingId.set(item.id);
     this.groupName = item.groupName;
+    this.icon = item.icon ?? '';
     this.errorMessage.set(null);
   }
 
@@ -49,12 +52,13 @@ export class AdminGroups implements OnInit {
     this.editingId.set(null);
     this.addFormOpen.set(false);
     this.groupName = '';
+    this.icon = '';
     this.errorMessage.set(null);
   }
 
   protected submit(): void {
     this.errorMessage.set(null);
-    const request = { groupName: this.groupName };
+    const request = { groupName: this.groupName, icon: this.icon };
     const id = this.editingId();
     const result$ = id === null
       ? this.productCatalog.createGroup(request)

@@ -20,6 +20,7 @@ export class AdminSubgroups implements OnInit {
   protected readonly errorMessage = signal<string | null>(null);
 
   protected groupName = '';
+  protected icon = '';
   protected parentGroupId: number | null = null;
 
   ngOnInit(): void {
@@ -40,6 +41,7 @@ export class AdminSubgroups implements OnInit {
   protected openAddForm(): void {
     this.editingId.set(null);
     this.groupName = '';
+    this.icon = '';
     this.parentGroupId = null;
     this.errorMessage.set(null);
     this.addFormOpen.set(true);
@@ -53,6 +55,7 @@ export class AdminSubgroups implements OnInit {
     }
     this.editingId.set(entry.subGroup.id);
     this.groupName = entry.subGroup.groupName;
+    this.icon = entry.subGroup.icon ?? '';
     this.parentGroupId = entry.parentGroupId;
     this.errorMessage.set(null);
   }
@@ -61,6 +64,7 @@ export class AdminSubgroups implements OnInit {
     this.editingId.set(null);
     this.addFormOpen.set(false);
     this.groupName = '';
+    this.icon = '';
     this.parentGroupId = null;
     this.errorMessage.set(null);
   }
@@ -71,7 +75,7 @@ export class AdminSubgroups implements OnInit {
       return;
     }
     this.errorMessage.set(null);
-    const request = { groupName: this.groupName, parentGroupId: this.parentGroupId };
+    const request = { groupName: this.groupName, icon: this.icon, parentGroupId: this.parentGroupId };
     const id = this.editingId();
     const result$ = id === null
       ? this.productCatalog.createSubGroup(request)

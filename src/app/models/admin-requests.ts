@@ -4,10 +4,12 @@ export interface PropertyDefinitionRequest {
 
 export interface ProductCategoryGroupRequest {
   groupName: string;
+  icon: string;
 }
 
 export interface ProductSubCategoryGroupRequest {
   groupName: string;
+  icon: string;
   parentGroupId: number;
 }
 

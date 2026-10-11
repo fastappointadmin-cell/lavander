@@ -15,6 +15,10 @@
   @if (addFormOpen()) {
     <form (ngSubmit)="submit()" class="flex items-end gap-3 mb-4 border border-gray-200 rounded-lg p-4">
       <label class="flex flex-col gap-1 text-sm text-gray-700">
+        Icon
+        <input [(ngModel)]="icon" name="icon" placeholder="🧼" class="admin-field w-16 text-center" />
+      </label>
+      <label class="flex flex-col gap-1 text-sm text-gray-700">
         Group name
         <input [(ngModel)]="groupName" name="groupName" required class="admin-field" />
       </label>
@@ -27,11 +31,18 @@
     @for (item of items(); track item.id) {
       <div>
         <div (click)="toggleEdit(item)" class="flex items-center justify-between gap-2 px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors">
-          <span class="text-sm text-gray-900 min-w-0 flex-1 truncate">{{ item.groupName }}</span>
+          <span class="text-sm text-gray-900 min-w-0 flex-1 truncate">
+            @if (item.icon) { <span class="mr-1.5">{{ item.icon }}</span> }
+            {{ item.groupName }}
+          </span>
           <button type="button" (click)="$event.stopPropagation(); remove(item)" class="text-red-600 hover:underline text-sm shrink-0">Delete</button>
         </div>
         @if (editingId() === item.id) {
           <form (ngSubmit)="submit()" class="flex items-end gap-3 px-4 py-3 bg-gray-50 border-t border-gray-100">
+            <label class="flex flex-col gap-1 text-sm text-gray-700">
+              Icon
+              <input [(ngModel)]="icon" name="icon" placeholder="🧼" class="admin-field w-16 text-center" />
+            </label>
             <label class="flex flex-col gap-1 text-sm text-gray-700">
               Group name
               <input [(ngModel)]="groupName" name="groupName" required class="admin-field" />

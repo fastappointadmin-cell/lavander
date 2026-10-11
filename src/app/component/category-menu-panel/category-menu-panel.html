@@ -8,7 +8,10 @@
         [class.text-violet-600]="isGroupHighlighted(group.id)"
         [class.text-gray-900]="!isGroupHighlighted(group.id)"
       >
-        <span>{{ group.groupName }}</span>
+        <span>
+          @if (group.icon) { <span class="mr-1.5">{{ group.icon }}</span> }
+          {{ group.groupName }}
+        </span>
         <span class="text-gray-400">&rsaquo;</span>
       </li>
     }
@@ -26,7 +29,10 @@
     <div class="flex gap-8 p-6 min-w-[32rem]">
       @for (subGroup of active.subGroups; track subGroup.id) {
         <div class="w-48">
-          <p class="font-semibold text-sm text-gray-900 mb-2">{{ subGroup.groupName }}</p>
+          <p class="font-semibold text-sm text-gray-900 mb-2">
+            @if (subGroup.icon) { <span class="mr-1">{{ subGroup.icon }}</span> }
+            {{ subGroup.groupName }}
+          </p>
           <ul class="space-y-1.5">
             @for (category of subGroup.categories; track category.id) {
               <li class="text-sm text-gray-600 hover:text-violet-600 cursor-pointer" (click)="onCategoryClick(category, active, subGroup)">{{ category.categoryName }}</li>
